@@ -1,0 +1,6 @@
+bob.extension
+bob.learn.linear
+bob.learn.activation
+bob.learn.mlp
+bob.measure
+numpy
