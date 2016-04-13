@@ -7,8 +7,8 @@ import numpy
 
 from .Algorithm import Algorithm
 
-import logging
-logger = logging.getLogger("bob.fusion.base")
+import bob.core
+logger = bob.core.log.setup("bob.fusion.base")
 
 
 class Weighted_Sum(Algorithm):
@@ -16,12 +16,15 @@ class Weighted_Sum(Algorithm):
 
   def __init__(self, weights=None, *args, **kwargs):
     super(Weighted_Sum, self).__init__(
-      performs_training=False, *args, **kwargs)
+      performs_training=False, weights=weights,
+      has_closed_form_solution=True, *args, **kwargs)
     self.weights = weights
 
-  def __call__(self):
-    super(Weighted_Sum, self).__call__()
+  def decision_function(self, scores):
     if self.weights is None:
-      return numpy.mean(self.scores, axis=1)
+      return numpy.mean(scores, axis=1)
     else:
-      return numpy.sum(self.scores * self.weights, axis=1)
+      return numpy.sum(scores * self.weights, axis=1)
+
+  def closed_form(self, x1, y):
+    return 2*y - x1

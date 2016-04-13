@@ -9,52 +9,79 @@ import bob.core.random
 import numpy
 
 from .Algorithm import Algorithm
+from .mlp_train_helper import MLPTrainer
 
-import logging
-logger = logging.getLogger("bob.fusion.base")
+import bob.core
+logger = bob.core.log.setup("bob.fusion.base")
 
 
 class MLP(Algorithm):
-  """docstring for MLP"""
+  """This MLP is implemented using the bob tools
+  It may change its API and functionality in the future.
+  """
 
   def __init__(self,
-               mlp_shape=None,
+               n_systems=2,
+               hidden_layers=None,
                trainer_devel=None,
                seed=None,
                *args, **kwargs):
+    # chicken and egg :D call __init__ twice.
+    super(MLP, self).__init__(performs_training=True, *args, **kwargs)
+    if hidden_layers is None:
+      hidden_layers = [3]
+    if self.scores is not None:
+      n_systems = numpy.asarray(self.scores).shape[1]
+    self.mlp_shape = [n_systems] + hidden_layers + [1]
     super(MLP, self).__init__(
-        performs_training=True, *args, **kwargs)
-    if mlp_shape is not None:
-      self.mlp_shape = mlp_shape
-    elif self.scores is not None:
-      self.mlp_shape = (numpy.asarray(self.scores).shape[1], 3, 1)
-    else:
-      self.mlp_shape = (2, 3, 1)
-    self.machine = self.machine if self.machine else \
+        performs_training=True, mlp_shape=self.mlp_shape, seed=seed,
+        *args, **kwargs)
+    self.seed = seed
+    self.trainer_devel = trainer_devel if trainer_devel else \
+        self.trainer_scores
+    self._my_kwargs = kwargs
+    self.initialize()
+
+  def initialize(self, force=False):
+    self.machine = self.machine if self.machine and not force else \
         bob.learn.mlp.Machine(self.mlp_shape)
-    if seed is not None:
-      self.rng = bob.core.random.mt19937(seed)
+    if self.seed is not None:
+      self.rng = bob.core.random.mt19937(self.seed)
       self.machine.randomize(rng=self.rng)
     else:
       self.machine.randomize()
-    self.trainer = self.trainer if self.trainer else \
+    self.trainer = self.trainer if self.trainer and not force else \
         bob.learn.mlp.RProp(1, bob.learn.mlp.SquareError(
             self.machine.output_activation), machine=self.machine,
           train_biases=False)
-    self.trainer_devel = trainer_devel if trainer_devel else \
+
+  def prepare_train(self):
+    self.trainer_devel = self.trainer_devel if self.trainer_devel else \
         self.trainer_scores
-    self.train_helper = bob.learn.mlp.MLPTrainer(
+    self.train_helper = MLPTrainer(
         train=self.trainer_scores[::-1],
         devel=self.trainer_devel[::-1],
         mlp_shape=self.mlp_shape,
         machine=self.machine,
         trainer=self.trainer,
-        **kwargs)
+        **self._my_kwargs)
 
-  def train(self):
-    super(MLP, self).train()
+  def fit(self, train_scores, y):
+    n_systems = train_scores.shape[1]
+    if n_systems != self.mlp_shape[0]:
+      logger.warn(
+        'Reinitializing the MLP machine with the shape of {} to {} to match th'
+        'e input size.'.format(self.mlp_shape, [n_systems]+self.mlp_shape[1:]))
+      self.mlp_shape = [n_systems] + self.mlp_shape[1:]
+      self.n_systems = n_systems
+      self.hidden_layers = self.mlp_shape[1:-1]
+      self.initialize(force=True)
+    self.trainer_scores = (train_scores[numpy.logical_not(y)], train_scores[y])
+    self.prepare_train()
     self.machine, self.analyzer = self.train_helper()
 
-  def __call__(self):
-    super(MLP, self).__call__()
-    return self.machine(self.scores).flatten()
+  def decision_function(self, scores):
+    scores = self.machine(scores)
+    if scores.ndim == 2 and scores.shape[1] == 1:
+      scores = scores.ravel()
+    return scores

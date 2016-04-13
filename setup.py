@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-# Amir Mohammadi <amir.mohammadi@idiap.ch>
-# Mon 21 Mar 08:18:08 2016 CEST
+# vim: set fileencoding=utf-8 :
+# Andre Anjos <andre.anjos@idiap.ch>
+# Mon 16 Apr 08:18:08 2012 CEST
 #
 # Copyright (C) Idiap Research Institute, Martigny, Switzerland
 #
@@ -32,7 +33,6 @@
 # allows you to test your package with new python dependencies w/o requiring
 # administrative interventions.
 
-
 from setuptools import setup, dist
 dist.Distribution(dict(setup_requires=['bob.extension']))
 
@@ -47,13 +47,13 @@ setup(
     # information before releasing code publicly.
     name='bob.fusion.base',
     version=open("version.txt").read().rstrip(),
-    description='Basic fusion implementations',
+    description='Basic tools for running score fusion experiments',
 
     url='https://www.github.com/bioidiap/bob.fusion.base',
     license='GPLv3',
     author='Amir Mohammadi',
-    author_email='amir.mohammadi@idiap.ch',
-    keywords='bob, fusion',
+    author_email='183.amir@gmail.com',
+    keywords='bob, score fusion, evaluation',
 
     # If you have a better, long description of your package, place it on the
     # 'doc' directory and then hook it here
@@ -97,60 +97,21 @@ setup(
     #
     # In this simple example we will create a single program that will print
     # the version of bob.
-    # entry_points={
+    entry_points={
 
-    #   # scripts should be declared using this entry:
-    #   'console_scripts': [
-    #     'verify.py         = bob.fusion.base.script.verify:main',
-    #     'resources.py      = bob.fusion.base.script.resources:resources',
-    #     'databases.py      = bob.fusion.base.script.resources:databases',
-    #     'evaluate.py       = bob.fusion.base.script.evaluate:main',
-    #     'collect_results.py = bob.fusion.base.script.collect_results:main',
-    #     'grid_search.py    = bob.fusion.base.script.grid_search:main',
-    #     'preprocess.py     = bob.fusion.base.script.preprocess:main',
-    #     'extract.py        = bob.fusion.base.script.extract:main',
-    #     'enroll.py         = bob.fusion.base.script.enroll:main',
-    #     'score.py          = bob.fusion.base.script.score:main',
-    #     'fusion_llr.py     = bob.fusion.base.script.fusion_llr:main',
-    #   ],
+      # scripts should be declared using this entry:
+      'console_scripts': [
+        'fuse.py     = bob.fusion.base.script.fuse:main',
+      ],
 
-    #   'bob.bio.database': [
-    #     # for test purposes only
-    #     'dummy             = bob.fusion.base.test.dummy.database:database',
-    #   ],
+      'bob.fusion.algorithm': [
+        'mean        = bob.fusion.base.config.algorithm.mean:algorithm',
+        'llr         = bob.fusion.base.config.algorithm.llr:algorithm',
+        'plr-2       = bob.fusion.base.config.algorithm.plr_2:algorithm',
+        'mlp         = bob.fusion.base.config.algorithm.mlp:algorithm',
+      ],
 
-    #   'bob.bio.preprocessor': [
-    #     # for test purposes only
-    #     'dummy             = bob.fusion.base.test.dummy.preprocessor:preprocessor',
-    #   ],
-
-    #   'bob.bio.extractor': [
-    #     # for test purposes only
-    #     'dummy             = bob.fusion.base.test.dummy.extractor:extractor',
-    #     'linearize         = bob.fusion.base.config.extractor.linearize:extractor',
-    #   ],
-
-    #   'bob.bio.algorithm': [
-    #     # for test purposes only
-    #     'dummy             = bob.fusion.base.test.dummy.algorithm:algorithm',
-    #     'distance-euclidean = bob.fusion.base.config.algorithm.distance_euclidean:algorithm',
-    #     'distance-cosine   = bob.fusion.base.config.algorithm.distance_cosine:algorithm',
-    #     'pca               = bob.fusion.base.config.algorithm.pca:algorithm',
-    #     'lda               = bob.fusion.base.config.algorithm.lda:algorithm',
-    #     'pca+lda           = bob.fusion.base.config.algorithm.pca_lda:algorithm',
-    #     'plda              = bob.fusion.base.config.algorithm.plda:algorithm',
-    #     'pca+plda          = bob.fusion.base.config.algorithm.pca_plda:algorithm',
-    #     'bic               = bob.fusion.base.config.algorithm.bic:algorithm',
-    #   ],
-
-    #   'bob.bio.grid': [
-    #     'local-p4          = bob.fusion.base.config.grid.local:grid',
-    #     'local-p8          = bob.fusion.base.config.grid.local:grid_p8',
-    #     'local-p16         = bob.fusion.base.config.grid.local:grid_p16',
-    #     'grid              = bob.fusion.base.config.grid.grid:grid',
-    #     'demanding         = bob.fusion.base.config.grid.demanding:grid',
-    #   ],
-    #     },
+        },
 
     # Classifiers are important if you plan to distribute this package through
     # PyPI. You can find the complete list of classifiers that are valid and

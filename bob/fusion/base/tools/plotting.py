@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import bob.learn.em
 import numpy
+import bob.learn.em
 
 
 def grouping(negatives, positives,
