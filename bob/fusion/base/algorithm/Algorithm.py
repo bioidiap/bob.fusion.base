@@ -15,9 +15,7 @@ class Algorithm(object):
   """docstring for Algorithm"""
 
   def __init__(self,
-               scores=None,
                performs_training=False,
-               trainer_scores=None,
                has_closed_form_solution=False,
                preprocessors=None,
                *args,
@@ -31,36 +29,35 @@ class Algorithm(object):
 
 """
     super(Algorithm, self).__init__()
-    self.scores = scores
     self.performs_training = performs_training
-    self.trainer_scores = trainer_scores
     self.has_closed_form_solution = has_closed_form_solution
     self.preprocessors = preprocessors
     self._kwargs = kwargs
     self._kwargs['preprocessors'] = preprocessors
 
+  def train_preprocessors(self, X):
+    if self.preprocessors is not None:
+      for preprocessor in self.preprocessors:
+        X = preprocessor.fit_transform(X)
+
   def preprocess(self, scores):
     if self.preprocessors is not None:
-      for i, (preprocessor, trained) in enumerate(self.preprocessors):
-        if not trained:
-          train_scores = np.vstack(self.trainer_scores)
-          preprocessor.fit(train_scores)
-          self.preprocessors[i] = (preprocessor, True)
-        scores = self.preprocessor.transform(scores)
+      for preprocessor in self.preprocessors:
+        scores = preprocessor.transform(scores)
     return scores
 
-  def train(self):
-    negatives, positives = self.trainer_scores
-    train_scores = np.vstack(self.trainer_scores)
-    train_scores = self.preprocess(train_scores)
+  def train(self, train, devel=None):
+    if devel is None:
+      devel = train
+    (negatives, positives) = train
+    train_scores = np.vstack((negatives, positives))
     neg_len = negatives.shape[0]
     y = np.zeros((train_scores.shape[0],), dtype='bool')
     y[neg_len:] = True
     self.fit(train_scores, y)
 
-  def __call__(self):
-    self.scores = self.preprocess(self.scores)
-    return self.decision_function(self.scores)
+  def fuse(self, scores):
+    return self.decision_function(scores)
 
   def plot_boundary_decision(self, score_labels, threshold,
                              label_system1='',

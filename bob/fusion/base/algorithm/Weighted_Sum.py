@@ -20,6 +20,9 @@ class Weighted_Sum(Algorithm):
       has_closed_form_solution=True, *args, **kwargs)
     self.weights = weights
 
+  def fit(self, X, y):
+    pass
+
   def decision_function(self, scores):
     if self.weights is None:
       return numpy.mean(scores, axis=1)
