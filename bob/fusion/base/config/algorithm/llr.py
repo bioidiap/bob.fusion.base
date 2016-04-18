@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 import bob.fusion.base
-import sklearn.preprocessing
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
 
-algorithm = bob.fusion.base.algorithm.LogisticRegression(
-  preprocessors=[(sklearn.preprocessing.RobustScaler(), False)])
+algorithm = bob.fusion.base.algorithm.Algorithm(
+  preprocessors=[StandardScaler()],
+  classifier=LogisticRegression())

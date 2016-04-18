@@ -9,7 +9,7 @@ import numpy as np
 
 from bob.io.base import create_directories_safe
 from bob.measure.load import load_score, get_all_scores,\
-    get_negatives_positives_all
+    get_negatives_positives_all, dump_score
 from bob.bio.base import utils
 
 from ..tools import parse_arguments, write_info
@@ -21,10 +21,6 @@ logger = bob.core.log.setup("bob.fusion.base")
 def fuse(args, command_line_parameters):
   """Do the actual fusion."""
   algorithm = args.algorithm
-  if args.score_type == 4:
-    fmt = '%s %s %s %.6f'
-  else:
-    fmt = '%s %s %s %s %.6f'
 
   write_info(args, command_line_parameters)
 
@@ -53,15 +49,23 @@ def fuse(args, command_line_parameters):
         assert(np.all(score_lines['claimed_id'] == score_lines0['claimed_id']))
         assert(np.all(score_lines['real_id'] == score_lines0['real_id']))
 
+  # train the preprocessors
+  algorithm.train_preprocessors(scores_dev)
+
+  # preprocess data
+  scores_dev = algorithm.preprocess(scores_dev)
+  scores_eval = algorithm.preprocess(scores_eval)
+  neg, pos = trainer_scores
+  neg, pos = algorithm.preprocess(neg), algorithm.preprocess(pos)
+  trainer_scores = (neg, pos)
+
   # train the model
   if utils.check_file(args.model_file, args.force, 1000):
     logger.info(
       "- Fusion: model '%s' already exists.", args.model_file)
     algorithm = algorithm.load(args.model_file)
-    algorithm.trainer_scores = trainer_scores
-  elif algorithm.performs_training:
-    algorithm.trainer_scores = trainer_scores
-    algorithm.train()
+  else:
+    algorithm.train(trainer_scores)
     algorithm.save(args.model_file)
 
   # fuse the scores (dev)
@@ -69,12 +73,11 @@ def fuse(args, command_line_parameters):
     logger.info(
       "- Fusion: scores '%s' already exists.", args.fused_dev_file)
   else:
-    algorithm.scores = scores_dev
-    fused_scores_dev = algorithm()
-    score_lines = np.array(score_lines_list_dev[0])
+    fused_scores_dev = algorithm.fuse(scores_dev)
+    score_lines = score_lines_list_dev[0]
     score_lines['score'] = fused_scores_dev
     create_directories_safe(os.path.dirname(args.fused_dev_file))
-    np.savetxt(args.fused_dev_file, score_lines, fmt=fmt)
+    dump_score(args.fused_dev_file, score_lines)
 
   # fuse the scores (eval)
   if args.eval_files:
@@ -82,12 +85,11 @@ def fuse(args, command_line_parameters):
       logger.info(
         "- Fusion: scores '%s' already exists.", args.fused_eval_file)
     else:
-      algorithm.scores = scores_eval
-      fused_scores_eval = algorithm()
-      score_lines = np.array(score_lines_list_eval[0])
+      fused_scores_eval = algorithm.fuse(scores_eval)
+      score_lines = score_lines_list_eval[0]
       score_lines['score'] = fused_scores_eval
       create_directories_safe(os.path.dirname(args.fused_eval_file))
-      np.savetxt(args.fused_eval_file, score_lines, fmt=fmt)
+      dump_score(args.fused_eval_file, score_lines)
 
 
 def main(command_line_parameters=None):

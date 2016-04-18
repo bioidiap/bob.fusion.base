@@ -6,7 +6,7 @@ from __future__ import absolute_import
 import bob.learn.mlp
 import bob.core.random
 import bob.io.base
-import numpy
+import pickle
 
 from .Algorithm import Algorithm
 from .mlp_train_helper import MLPTrainer
@@ -23,27 +23,19 @@ class MLP(Algorithm):
   def __init__(self,
                n_systems=2,
                hidden_layers=None,
-               trainer_devel=None,
                seed=None,
                machine=None,
                trainer=None,
                *args, **kwargs):
-    # chicken and egg :D call __init__ twice.
-    super(MLP, self).__init__(performs_training=True, *args, **kwargs)
+    super(MLP, self).__init__(
+        classifier=self,
+        *args, **kwargs)
     if hidden_layers is None:
       hidden_layers = [3]
-    if self.scores is not None:
-      n_systems = numpy.asarray(self.scores).shape[1]
     self.mlp_shape = [n_systems] + hidden_layers + [1]
-    super(MLP, self).__init__(
-        performs_training=True, mlp_shape=self.mlp_shape, seed=seed,
-        machine=str(machine), trainer=str(trainer),
-        *args, **kwargs)
     self.seed = seed
     self.machine = machine
     self.trainer = trainer
-    self.trainer_devel = trainer_devel if trainer_devel else \
-        self.trainer_scores
     self._my_kwargs = kwargs
     self.initialize()
 
@@ -59,20 +51,16 @@ class MLP(Algorithm):
         bob.learn.mlp.RProp(1, bob.learn.mlp.SquareError(
             self.machine.output_activation), machine=self.machine,
           train_biases=False)
+    self._kwargs = {
+      'seed': self.seed,
+      'mlp_shape': self.mlp_shape,
+      'machine': self.machine,
+      'train': self.train,
+    }
 
-  def prepare_train(self):
-    self.trainer_devel = self.trainer_devel if self.trainer_devel else \
-        self.trainer_scores
-    self.train_helper = MLPTrainer(
-        train=self.trainer_scores[::-1],
-        devel=self.trainer_devel[::-1],
-        mlp_shape=self.mlp_shape,
-        machine=self.machine,
-        trainer=self.trainer,
-        **self._my_kwargs)
-
-  def fit(self, train_scores, y):
-    n_systems = train_scores.shape[1]
+  def prepare_train(self, train, devel):
+    (negatives, positives) = train
+    n_systems = negatives.shape[1]
     if n_systems != self.mlp_shape[0]:
       logger.warn(
         'Reinitializing the MLP machine with the shape of {} to {} to match th'
@@ -81,8 +69,18 @@ class MLP(Algorithm):
       self.n_systems = n_systems
       self.hidden_layers = self.mlp_shape[1:-1]
       self.initialize(force=True)
-    self.trainer_scores = (train_scores[numpy.logical_not(y)], train_scores[y])
-    self.prepare_train()
+    self.train_helper = MLPTrainer(
+        train=train[::-1],
+        devel=devel[::-1],
+        mlp_shape=self.mlp_shape,
+        machine=self.machine,
+        trainer=self.trainer,
+        **self._my_kwargs)
+
+  def train(self, train, devel=None):
+    if devel is None:
+      devel = train
+    self.prepare_train(train, devel)
     self.machine, self.analyzer = self.train_helper()
 
   def decision_function(self, scores):
@@ -91,16 +89,30 @@ class MLP(Algorithm):
       scores = scores.ravel()
     return scores
 
+  def _get_hdf5_file(self, model_file):
+    return model_file[:-3] + 'hdf5'
+
   def save(self, model_file):
-    d5 = bob.io.base.HDF5File(model_file, "w")
+    d5 = bob.io.base.HDF5File(self._get_hdf5_file(model_file), "w")
     try:
       self.machine.save(d5)
     finally:
       d5.close()
 
+    # dump preprocessors in a pickle file because
+    # we don't know how they look like
+    with open(model_file, 'wb') as f:
+      pickle.dump(self.preprocessors, f)
+
   def load(self, model_file):
-    d5 = bob.io.base.HDF5File(model_file)
+    d5 = bob.io.base.HDF5File(self._get_hdf5_file(model_file))
     try:
       self.machine.load(d5)
     finally:
       d5.close()
+
+    # load preprocessors
+    with open(model_file, "rb") as f:
+      self.preprocessors = pickle.load(f)
+
+    return self

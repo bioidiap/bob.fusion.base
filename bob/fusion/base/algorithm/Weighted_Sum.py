@@ -16,8 +16,9 @@ class Weighted_Sum(Algorithm):
 
   def __init__(self, weights=None, *args, **kwargs):
     super(Weighted_Sum, self).__init__(
-      performs_training=False, weights=weights,
-      has_closed_form_solution=True, *args, **kwargs)
+      classifier=self,
+      weights=weights,
+      *args, **kwargs)
     self.weights = weights
 
   def fit(self, X, y):
@@ -30,4 +31,10 @@ class Weighted_Sum(Algorithm):
       return numpy.sum(scores * self.weights, axis=1)
 
   def closed_form(self, x1, y):
-    return 2*y - x1
+    if self.weights is None:
+      return 2*y - x1
+    else:
+      w1 = self.weights[0]
+      w2 = self.weights[1]
+      x2 = (y - x1*w1)/w2
+      return x2
