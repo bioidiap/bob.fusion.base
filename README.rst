@@ -25,8 +25,9 @@ This package is part of the ``bob.fusion`` packages, which allow to run comparab
 This package contains basic functionality to run score fusion in biometric recognition experiments.
 It provides a generic ``./bin/fuse.py`` script that takes several parameters, including:
 
-* A list of development score files
+* A list of score files
 * A classification algorithm
+* A list of preprocessors.
 
 All these steps of the score fusion in biometric recognition system are given as configuration files.
 
