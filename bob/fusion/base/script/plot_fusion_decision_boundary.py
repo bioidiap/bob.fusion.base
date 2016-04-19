@@ -36,8 +36,82 @@ import bob.core
 from bob.measure.load import load_score, get_negatives_positives,\
   get_all_scores
 from bob.measure import eer_threshold
+from ..tools import grouping
 
 logger = bob.core.log.setup("bob.fusion.base")
+
+
+def plot_boundary_decision(algorithm, scores, score_labels, threshold,
+                           thres_system1=None,
+                           thres_system2=None,
+                           do_grouping=False,
+                           resolution=100,
+                           x_pad=0.5,
+                           y_pad=0.5,
+                           alpha=0.75,
+                           legends=None,
+                           i1=0,
+                           i2=1,
+                           **kwargs
+                           ):
+  '''
+  Plots the boundary decision of the Algorithm
+
+  @param score_labels numpy.array A (scores.shape[0]) array containing
+                                  the true labels of scores.
+
+  @param threshold    float       threshold of the decision boundary
+  '''
+  if legends is None:
+    legends = ['Impostor', 'Genuine']
+  markers = ['x', 'o']
+
+  if scores.shape[1] > 2:
+    raise NotImplementedError(
+      "Currently plotting the decision boundary for more than two systems "
+      "is not supported.")
+
+  import matplotlib.pyplot as plt
+  plt.gca()  # this is necessary for subplots to work.
+
+  X = scores[:, [i1, i2]]
+  Y = score_labels
+  x_min, x_max = X[:, i1].min() - x_pad, X[:, i1].max() + x_pad
+  y_min, y_max = X[:, i2].min() - y_pad, X[:, i2].max() + y_pad
+  xx, yy = numpy.meshgrid(
+    numpy.linspace(x_min, x_max, resolution),
+    numpy.linspace(y_min, y_max, resolution))
+  temp = numpy.c_[xx.ravel(), yy.ravel()]
+  temp = algorithm.preprocess(temp)
+  Z = (algorithm.fuse(temp) > threshold).reshape(xx.shape)
+
+  contourf = plt.contour(xx, yy, Z, 1, alpha=1, cmap=plt.cm.viridis)
+
+  if do_grouping:
+    negatives, positives = X[numpy.logical_not(Y)], X[Y]
+    negatives, positives = grouping(negatives, positives, **kwargs)
+    X = numpy.concatenate((negatives, positives), axis=0)
+    Y = numpy.concatenate(
+      (numpy.zeros(negatives.shape[0], dtype=numpy.bool8),
+       numpy.ones(positives.shape[0], dtype=numpy.bool8)),
+      axis=0)
+
+  negatives, positives = X[numpy.logical_not(Y)], X[Y]
+  colors = plt.cm.viridis(numpy.linspace(0, 1, 2))
+  for i, X in enumerate((negatives, positives)):
+    plt.scatter(
+      X[:, 0], X[:, 1], marker=markers[i], alpha=alpha,
+      c=colors[i], label=legends[i])
+  plt.legend()
+
+  if thres_system1 is not None:
+    plt.axvline(thres_system1, color='red')
+    plt.axhline(thres_system2, color='red')
+
+  plt.xlim([x_min, x_max])
+  plt.ylim([y_min, y_max])
+
+  return contourf
 
 
 def main(command_line_parameters=None):
@@ -60,8 +134,8 @@ def main(command_line_parameters=None):
   score_labels = score_lines['claimed_id'] == score_lines['real_id']
 
   # plot the decision boundary
-  algorithm.plot_boundary_decision(
-    scores, score_labels, threshold,
+  plot_boundary_decision(
+    algorithm, scores, score_labels, threshold,
     do_grouping=True,
     npoints=int(args['--group']),
     seed=0,

@@ -6,6 +6,6 @@ bob.measure
 bob.learn.activation
 bob.learn.mlp
 bob.bio.base
-scikit-learn
+scikit-learn # Used for classifiers and pre-processors.
 matplotlib   # for plotting
 docopt       # for plotting script

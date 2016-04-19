@@ -1,6 +1,7 @@
-# from .utils import *
 from . import algorithm
 from . import tools
+from . import config
+from . import script
 
 def get_config():
   """Returns a string containing the configuration information.

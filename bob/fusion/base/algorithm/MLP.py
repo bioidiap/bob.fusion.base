@@ -16,8 +16,8 @@ logger = bob.core.log.setup("bob.fusion.base")
 
 
 class MLP(Algorithm):
-  """This MLP is implemented using the bob tools
-  It may change its API and functionality in the future.
+  """This MLP is implemented using the bob tools.
+  The preprocessors used with this class should be pickleable.
   """
 
   def __init__(self,

@@ -12,7 +12,7 @@ logger = bob.core.log.setup("bob.fusion.base")
 
 
 class Weighted_Sum(Algorithm):
-  """docstring for Weighted_Sum weighted sum (default: mean)"""
+  """weighted sum (default: mean)"""
 
   def __init__(self, weights=None, *args, **kwargs):
     super(Weighted_Sum, self).__init__(

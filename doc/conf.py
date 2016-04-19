@@ -58,12 +58,12 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Bobs interface for running biometric recognition experiments'
+project = u'Bobs interface for running score fusion in biometric recognition experiments'
 import time
 copyright = u'%s, Idiap Research Institute' % time.strftime('%Y')
 
 # Grab the setup entry
-distribution = pkg_resources.require('bob.bio.base')[0]
+distribution = pkg_resources.require('bob.fusion.base')[0]
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
