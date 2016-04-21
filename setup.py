@@ -52,7 +52,7 @@ setup(
     url='https://www.github.com/bioidiap/bob.fusion.base',
     license='GPLv3',
     author='Amir Mohammadi',
-    author_email='183.amir@gmail.com',
+    author_email='amir.mohammadi@idiap.ch',
     keywords='bob, score fusion, evaluation',
 
     # If you have a better, long description of your package, place it on the
