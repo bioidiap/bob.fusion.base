@@ -28,7 +28,7 @@ def fuse(args, command_line_parameters):
   score_lines_list_dev = [load_score(path, ncolumns=args.score_type)
                           for path in args.dev_files]
   scores_dev = get_all_scores(score_lines_list_dev)
-  trainer_scores = get_negatives_positives_all(score_lines_list_dev)
+  (neg, pos) = get_negatives_positives_all(score_lines_list_dev)
   if args.eval_files:
     score_lines_list_eval = [load_score(path, ncolumns=args.score_type)
                              for path in args.eval_files]
@@ -55,9 +55,7 @@ def fuse(args, command_line_parameters):
   # preprocess data
   scores_dev = algorithm.preprocess(scores_dev)
   scores_eval = algorithm.preprocess(scores_eval)
-  neg, pos = trainer_scores
   neg, pos = algorithm.preprocess(neg), algorithm.preprocess(pos)
-  trainer_scores = (neg, pos)
 
   # train the model
   if utils.check_file(args.model_file, args.force, 1000):
@@ -65,7 +63,7 @@ def fuse(args, command_line_parameters):
       "- Fusion: model '%s' already exists.", args.model_file)
     algorithm = algorithm.load(args.model_file)
   else:
-    algorithm.train(trainer_scores)
+    algorithm.train(neg, pos)
     algorithm.save(args.model_file)
 
   # fuse the scores (dev)

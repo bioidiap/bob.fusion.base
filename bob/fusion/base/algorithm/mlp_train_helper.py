@@ -192,13 +192,8 @@ class MLPTrainer(object):
     self.max_iter = max_iter
     self.no_improvements = no_improvements
     self.valley_condition = valley_condition
-    self.machine = machine if machine else \
-        bob.learn.mlp.Machine(self.mlp_shape)
-    self.machine.randomize()
-    self.trainer = trainer if trainer else \
-        bob.learn.mlp.RProp(batch_size, bob.learn.mlp.SquareError(
-          self.machine.output_activation), machine=self.machine,
-          train_biases=False)
+    self.machine = machine
+    self.trainer = trainer
 
   def __call__(self):
     return self.make_mlp()
@@ -232,8 +227,6 @@ class MLPTrainer(object):
     # machine = bob.learn.mlp.Machine(self.shape)
     # machine.activation = bob.learn.activation.HyperbolicTangent() #the
     # defaults are anyway Hyperbolic Tangent for hidden and output layer
-    # machine.randomize()
-    # import ipdb; ipdb.set_trace()
     self.machine.input_subtract, self.machine.input_divide = \
         shuffler.stdnorm()
 
@@ -277,7 +270,8 @@ class MLPTrainer(object):
           min_devel_rmse = avg_devel_rmse
           logger.info("%d: New valley stop threshold set to %.4e",
                       iteration, avg_devel_rmse / VALLEY_CONDITION)
-        if stop_condition(min_devel_rmse, avg_devel_rmse, last_devel_rmse):
+        if stop_condition(min_devel_rmse, avg_devel_rmse, last_devel_rmse) \
+           or numpy.allclose(avg_devel_rmse / VALLEY_CONDITION, 0):
           logger.info("%d: Stopping on devel valley condition", iteration)
           logger.info("%d: Best machine happened on iteration %d with average "
                       "devel. RMSE of %.4e", iteration, best_machine_iteration,
@@ -288,7 +282,6 @@ class MLPTrainer(object):
 
         # train for 'epoch' times w/o stopping for tests
         for i in range(self.epoch):
-          # import ipdb; ipdb.set_trace()
           shuffler(data=shuffled_input, target=shuffled_target)
           self.trainer.batch_size = len(shuffled_input)
           self.trainer.train(

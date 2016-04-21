@@ -101,13 +101,14 @@ setup(
 
       # scripts should be declared using this entry:
       'console_scripts': [
-        'fuse.py     = bob.fusion.base.script.fuse:main',
+        'bob_fuse.py     = bob.fusion.base.script.bob_fuse:main',
         'plot_fusion_decision_boundary.py = bob.fusion.base.script.plot_fusion_decision_boundary:main',
       ],
 
       'bob.fusion.algorithm': [
         'mean        = bob.fusion.base.config.algorithm.mean:algorithm',
         'llr         = bob.fusion.base.config.algorithm.llr:algorithm',
+        'llr-skl     = bob.fusion.base.config.algorithm.llr_skl:algorithm',
         'plr-2       = bob.fusion.base.config.algorithm.plr_2:algorithm',
         'mlp         = bob.fusion.base.config.algorithm.mlp:algorithm',
       ],

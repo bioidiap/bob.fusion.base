@@ -50,13 +50,13 @@ class MLP(Algorithm):
     self.trainer = self.trainer if self.trainer and not force else \
         bob.learn.mlp.RProp(1, bob.learn.mlp.SquareError(
             self.machine.output_activation), machine=self.machine,
-          train_biases=False)
-    self._kwargs = {
-      'seed': self.seed,
-      'mlp_shape': self.mlp_shape,
-      'machine': self.machine,
-      'train': self.train,
-    }
+            train_biases=False)
+    self._kwargs.update({
+        'seed': self.seed,
+        'mlp_shape': self.mlp_shape,
+        'machine': str(self.machine),
+        'trainer': str(type(self.trainer))})
+    self._kwargs.update(self._my_kwargs)
 
   def prepare_train(self, train, devel):
     (negatives, positives) = train
@@ -64,7 +64,8 @@ class MLP(Algorithm):
     if n_systems != self.mlp_shape[0]:
       logger.warn(
         'Reinitializing the MLP machine with the shape of {} to {} to match th'
-        'e input size.'.format(self.mlp_shape, [n_systems]+self.mlp_shape[1:]))
+        'e input size.'.format(self.mlp_shape,
+                               [n_systems] + self.mlp_shape[1:]))
       self.mlp_shape = [n_systems] + self.mlp_shape[1:]
       self.n_systems = n_systems
       self.hidden_layers = self.mlp_shape[1:-1]
@@ -77,10 +78,12 @@ class MLP(Algorithm):
         trainer=self.trainer,
         **self._my_kwargs)
 
-  def train(self, train, devel=None):
-    if devel is None:
-      devel = train
-    self.prepare_train(train, devel)
+  def train(self, train_neg, train_pos, devel_neg=None, devel_pos=None):
+    if devel_neg is None:
+      devel_neg = train_neg
+    if devel_pos is None:
+      devel_pos = train_pos
+    self.prepare_train((train_neg, train_pos), (devel_neg, devel_pos))
     self.machine, self.analyzer = self.train_helper()
 
   def decision_function(self, scores):
@@ -88,31 +91,3 @@ class MLP(Algorithm):
     if scores.ndim == 2 and scores.shape[1] == 1:
       scores = scores.ravel()
     return scores
-
-  def _get_hdf5_file(self, model_file):
-    return model_file[:-3] + 'hdf5'
-
-  def save(self, model_file):
-    d5 = bob.io.base.HDF5File(self._get_hdf5_file(model_file), "w")
-    try:
-      self.machine.save(d5)
-    finally:
-      d5.close()
-
-    # dump preprocessors in a pickle file because
-    # we don't know how they look like
-    with open(model_file, 'wb') as f:
-      pickle.dump(self.preprocessors, f)
-
-  def load(self, model_file):
-    d5 = bob.io.base.HDF5File(self._get_hdf5_file(model_file))
-    try:
-      self.machine.load(d5)
-    finally:
-      d5.close()
-
-    # load preprocessors
-    with open(model_file, "rb") as f:
-      self.preprocessors = pickle.load(f)
-
-    return self

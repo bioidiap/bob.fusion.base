@@ -3,6 +3,7 @@ numpy
 bob.core
 bob.extension
 bob.measure
+bob.learn.linear
 bob.learn.activation
 bob.learn.mlp
 bob.bio.base
