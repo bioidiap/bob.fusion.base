@@ -112,10 +112,11 @@ class Algorithm(object):
       extensions such as model_file and model_file[:-3]+'hdf5'.
     """
     # support for bob machines
-    if hasattr(self, "machine"):
-      self.save_bob(model_file)
+    if hasattr(self, "custom_save"):
+      self.custom_save(model_file)
     else:
       with open(model_file, "wb") as f:
+        pickle.dump(type(self), f)
         pickle.dump(self, f)
 
   def load(self, model_file):
@@ -128,46 +129,8 @@ class Algorithm(object):
       A new instance of the loaded algorithm.
     """
     with open(model_file, "rb") as f:
-      temp = pickle.load(f)
-    if isinstance(temp, Algorithm):
-      return temp
-    else:
-      return self.load_bob(model_file)
-
-  def _get_hdf5_file(self, model_file):
-    return model_file[:-3] + 'hdf5'
-
-  def save_bob(self, model_file):
-    # dump preprocessors in a pickle file because
-    # we don't know how they look like
-    # saves the class to create it later.
-    with open(model_file, 'wb') as f:
-      pickle.dump(self.preprocessors, f)
-      pickle.dump(type(self), f)
-      # just for consistent string representation
-      pickle.dump(self._kwargs, f)
-
-    d5 = bob.io.base.HDF5File(self._get_hdf5_file(model_file), "w")
-    try:
-      self.machine.save(d5)
-    finally:
-      d5.close()
-
-  def load_bob(self, model_file):
-    # load preprocessors and the class
-    with open(model_file, "rb") as f:
-      preprocessors = pickle.load(f)
-      myclass = pickle.load(f)
-      _kwargs = pickle.load(f)
-
-    myinstance = myclass(preprocessors=preprocessors)
-    # just for consistent string representation
-    myinstance._kwargs.update(_kwargs)
-
-    d5 = bob.io.base.HDF5File(self._get_hdf5_file(model_file))
-    try:
-      myinstance.machine.load(d5)
-    finally:
-      d5.close()
-
-    return myinstance
+      algo_class = pickle.load(f)
+      algo = algo_class()
+      if not hasattr(algo, 'custom_save'):
+        return pickle.load(f)
+    return algo.load(model_file)

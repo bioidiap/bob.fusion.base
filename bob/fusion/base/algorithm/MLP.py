@@ -6,16 +6,15 @@ from __future__ import absolute_import
 import bob.learn.mlp
 import bob.core.random
 import bob.io.base
-import pickle
 
-from .Algorithm import Algorithm
+from .AlgorithmBob import AlgorithmBob
 from .mlp_train_helper import MLPTrainer
 
 import bob.core
 logger = bob.core.log.setup("bob.fusion.base")
 
 
-class MLP(Algorithm):
+class MLP(AlgorithmBob):
   """This MLP is implemented using the bob tools.
   The preprocessors used with this class should be pickleable.
   """

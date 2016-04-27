@@ -5,13 +5,13 @@ from __future__ import absolute_import
 
 import bob.learn.linear
 
-from .Algorithm import Algorithm
+from .AlgorithmBob import AlgorithmBob
 
 import logging
 logger = logging.getLogger("bob.fusion.base")
 
 
-class LLR(Algorithm):
+class LLR(AlgorithmBob):
   """LLR Score fusion using Bob"""
 
   def __init__(self,

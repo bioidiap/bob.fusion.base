@@ -15,12 +15,8 @@ Options:
                           messages) to 1 (warnings), 2 (log messages), 3 (debug
                           information) by adding the --verbose option as often
                           as desired (e.g. '-vvv' for debug). [default: 0]
-  -a, --algorithm Algorithm  The fusion that was used during fusion if they
-                          implement a different load method e.g.
-                          bob.fusion.base.algorithm.MLP.
-                          [default: bob.fusion.base.algorithm.Algorithm]
   -g, --group N           If given scores will be grouped into N samples.
-                          [default: 500]
+                          Give -1 for no grouping. [default: -1]
   --grouping {random, kmeans}  The gouping algorithm used. [default: kmeans]
   -h --help               Show this screen.
   -V, --version           Show version.
@@ -110,6 +106,7 @@ def plot_boundary_decision(algorithm, scores, score_labels, threshold,
 
   plt.xlim([x_min, x_max])
   plt.ylim([y_min, y_max])
+  plt.grid('on')
 
   return contourf
 
@@ -117,11 +114,10 @@ def plot_boundary_decision(algorithm, scores, score_labels, threshold,
 def main(command_line_parameters=None):
   args = docopt(__doc__, argv=command_line_parameters,
                 version=bob.fusion.base.get_config())
-  print(args)
   bob.core.log.set_verbosity_level(logger, args['--verbose'])
 
   # load the algorithm
-  algorithm = eval('{}()'.format(args['--algorithm']))
+  algorithm = bob.fusion.base.algorithm.Algorithm()
   algorithm = algorithm.load(args['MODEL_FILE'])
 
   # load the scores
@@ -135,9 +131,13 @@ def main(command_line_parameters=None):
   score_labels = score_lines['claimed_id'] == score_lines['real_id']
 
   # plot the decision boundary
+  do_grouping = True
+  if int(args['--group']) == -1:
+    do_grouping = False
+
   plot_boundary_decision(
       algorithm, scores, score_labels, threshold,
-      do_grouping=True,
+      do_grouping=do_grouping,
       npoints=int(args['--group']),
       seed=0,
       gformat=args['--grouping']

@@ -33,9 +33,6 @@ def fuse(args, command_line_parameters):
     score_lines_list_eval = [load_score(path, ncolumns=args.score_type)
                              for path in args.eval_files]
     scores_eval = get_all_scores(score_lines_list_eval)
-  else:
-    score_lines_list_eval = []
-    scores_eval = []
 
   # check if score lines are consistent
   if not args.skip_check:
@@ -54,7 +51,8 @@ def fuse(args, command_line_parameters):
 
   # preprocess data
   scores_dev = algorithm.preprocess(scores_dev)
-  scores_eval = algorithm.preprocess(scores_eval)
+  if args.eval_files:
+    scores_eval = algorithm.preprocess(scores_eval)
   neg, pos = algorithm.preprocess(neg), algorithm.preprocess(pos)
 
   # train the model
