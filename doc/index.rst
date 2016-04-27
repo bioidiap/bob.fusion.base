@@ -19,7 +19,7 @@ Users Guide
 .. toctree::
    :maxdepth: 2
 
-   fusion
+   guide
 
 ================
 Reference Manual
@@ -28,7 +28,7 @@ Reference Manual
 .. toctree::
    :maxdepth: 2
 
-   py_api
+* :ref:`modindex`
 
 
 ==========
@@ -36,22 +36,11 @@ References
 ==========
 
 
-=========
-ToDo-List
-=========
-
-This documentation is still under development.
-Here is a list of things that needs to be done:
-
-.. todolist::
-   testing
-
 ==================
 Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
 
 .. include:: links.rst

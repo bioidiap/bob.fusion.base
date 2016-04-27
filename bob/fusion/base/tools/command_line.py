@@ -119,7 +119,7 @@ def write_info(args, command_line_parameters):
   command_line_parameters : [str] or ``None``
     The command line parameters that have been interpreted.
     If ``None``, the parameters specified by the user on command line
-      are considered.
+    are considered.
 
   executable : str
     The name of the executable (such as ``'./bin/verify.py'``) that is used
@@ -161,7 +161,7 @@ def load_resource(resource, keyword, imports=['bob.fusion.base'],
   1. a resource as defined in the setup.py
   2. a configuration file
   3. a string defining the construction of an object. If imports are required
-    for the construction of this object, they can be given as list of strings.
+     for the construction of this object, they can be given as list of strings.
 
   **Parameters:**
 
