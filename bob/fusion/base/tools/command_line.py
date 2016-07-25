@@ -36,25 +36,31 @@ def command_line_parser(description=__doc__, exclude_resources_from=[]):
     description=description,
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-  parser.add_argument('-i', '--dev-files', required=True,
+  parser.add_argument('-t', '--train-files', required=True,
                       nargs='+', help="A list of score files of "
-                                      "the development set.")
-  parser.add_argument('-I', '--eval-files', nargs='+',
+                                      "the train set.")
+  parser.add_argument('-d', '--dev-files', nargs='+',
+                      help="A list of score files of the development set; "
+                           "if given it must be the same number of files "
+                           "as the --train-files.")
+  parser.add_argument('-e', '--eval-files', nargs='+',
                       help="A list of score files of the evaluation set; "
                            "if given it must be the same number of files "
-                           "as the --dev-files.")
-  parser.add_argument('-o', '--fused-dev-file',
-                      required=True, help='The fused development score file.')
-  parser.add_argument(
-    '-O', '--fused-eval-file', help='The fused evaluation score file.')
-  parser.add_argument('--score-type', choices=[4, 5], default=4,
-                      help='The format the scores are provided.')
+                           "as the --train-files.")
+  parser.add_argument('-o', '--fused-dev-file', default=None,
+                      help='The fused development score file. '
+                           'Default is "scores-dev" in the --save-directory')
+  parser.add_argument('-O', '--fused-eval-file', default=None,
+                      help='The fused evaluation score file. '
+                           'Default is "scores-eval" in the --save-directory')
+  parser.add_argument('--score-type', choices=[4, 5], default=None,
+                      help='The format the scores are provided. If not '
+                           'provided, the number of columns will be guessed.')
   parser.add_argument('--skip-check', action='store_true',
                       help='If provided, score files are not checked '
                            'for consistency')
   parser.add_argument('-s', '--save-directory', help='The directory to save '
-                      'the experiment artifacts. If not given, the directory'
-                      ' of fused-dev-file will be used.')
+                      'the experiment artifacts.', default='fusion_result')
 
   config_group = parser.add_argument_group(
     'Parameters defining the experiment', ' Most of these parameters can be a'
@@ -95,8 +101,10 @@ def initialize(parsers, command_line_parameters=None, skips=[]):
     args.algorithm, 'algorithm', imports=args.imports)
 
   # set base directories
-  if args.save_directory is None:
-    args.save_directory = os.path.dirname(args.fused_dev_file)
+  if args.fused_dev_file is None:
+    args.fused_dev_file = os.path.join(args.save_directory, 'scores-dev')
+  if args.fused_eval_file is None:
+    args.fused_eval_file = os.path.join(args.save_directory, 'scores-eval')
 
   # result files
   args.info_file = os.path.join(args.save_directory, 'Experiment.info')

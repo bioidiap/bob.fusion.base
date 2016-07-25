@@ -21,7 +21,7 @@ class MLP(AlgorithmBob):
 
   def __init__(self,
                n_systems=2,
-               hidden_layers=None,
+               hidden_layers=(3,),
                seed=None,
                machine=None,
                trainer=None,
@@ -29,9 +29,7 @@ class MLP(AlgorithmBob):
     super(MLP, self).__init__(
         classifier=self,
         *args, **kwargs)
-    if hidden_layers is None:
-      hidden_layers = [3]
-    self.mlp_shape = [n_systems] + hidden_layers + [1]
+    self.mlp_shape = [n_systems] + list(hidden_layers) + [1]
     self.seed = seed
     self.machine = machine
     self.trainer = trainer

@@ -1,3 +1,4 @@
+from common import *
 from command_line import *
 from plotting import *
 
