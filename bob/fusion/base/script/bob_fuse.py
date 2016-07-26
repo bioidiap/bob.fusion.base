@@ -49,17 +49,17 @@ def fuse(args, command_line_parameters):
     if args.eval_files:
       check_consistency(gen_le, zei_le, atk_le)
 
-  scores_train = get_scores(gen_lt, zei_lt, atk_lt)
+  scores_train = get_scores(score_lines_list_train)
   train_neg = get_scores(zei_lt, atk_lt)
   train_pos = get_scores(gen_lt)
   if args.dev_files:
-    scores_dev = get_scores(gen_ld, zei_ld, atk_ld)
+    scores_dev = get_scores(score_lines_list_dev)
     dev_neg = get_scores(zei_ld, atk_ld)
     dev_pos = get_scores(gen_ld)
   else:
     dev_neg, dev_pos = None, None
   if args.eval_files:
-    scores_eval = get_scores(gen_le, zei_le, atk_le)
+    scores_eval = get_scores(score_lines_list_eval)
 
   # check for nan values
   found_nan = False
