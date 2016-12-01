@@ -106,6 +106,7 @@ setup(
       ],
 
       'bob.fusion.algorithm': [
+        'and        = bob.fusion.base.config.algorithm.and:algorithm',
         'mean        = bob.fusion.base.config.algorithm.mean:algorithm',
         'llr         = bob.fusion.base.config.algorithm.llr:algorithm',
         'llr-skl     = bob.fusion.base.config.algorithm.llr_skl:algorithm',
