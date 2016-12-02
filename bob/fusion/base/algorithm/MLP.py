@@ -21,7 +21,7 @@ class MLP(AlgorithmBob):
 
   def __init__(self,
                n_systems=2,
-               hidden_layers=(3,),
+               hidden_layers=(5,),
                seed=None,
                machine=None,
                trainer=None,

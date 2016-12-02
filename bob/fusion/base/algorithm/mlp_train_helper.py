@@ -178,7 +178,7 @@ class MLPTrainer(object):
                epoch=1,
                max_iter=1000,
                no_improvements=0,
-               valley_condition=0.9,
+               valley_condition=1,
                machine=None,
                trainer=None,
                *args, **kwargs
