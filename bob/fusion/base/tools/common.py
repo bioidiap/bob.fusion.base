@@ -1,4 +1,5 @@
 import numpy as np
+from collections import defaultdict
 
 import bob.core
 logger = bob.core.log.setup("bob.fusion.base")
@@ -32,6 +33,34 @@ def get_scores(*args):
   for temp in zip(*args):
     scores.append(np.concatenate([a['score'] for a in temp], axis=0))
   return np.vstack(scores).T
+
+
+def get_score_lines(*args):
+  # get the dtype names
+  names = list(args[0][0].dtype.names)
+  if len(names) != 4:
+    names = [n for n in names if 'model_label' not in n]
+  logger.debug(names)
+
+  # find the (max) size of strigns
+  dtypes = [a.dtype for temp in zip(*args) for a in temp]
+  lengths = defaultdict(list)
+  for name in names:
+    for d in dtypes:
+      lengths[name].append(d[name].itemsize // 4)
+
+  # make a new dtype
+  new_dtype = []
+  for name in names[:-1]:
+    new_dtype.append((name, 'U{}'.format(max(lengths[name]))))
+  new_dtype.append((names[-1], float))
+
+  score_lines = []
+  for temp in zip(*args):
+    for a in temp:
+      score_lines.extend(a[names].tolist())
+  score_lines = np.array(score_lines, dtype=new_dtype)
+  return score_lines
 
 
 def remove_nan(samples, found_nan):
