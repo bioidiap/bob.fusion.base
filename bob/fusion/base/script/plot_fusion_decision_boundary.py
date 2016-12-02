@@ -36,7 +36,7 @@ def plot_boundary_decision(algorithm, scores, score_labels, threshold,
   @param threshold    float       threshold of the decision boundary
   '''
   if legends is None:
-    legends = ['Impostor', 'Attack', 'Genuine']
+    legends = ['Zero Effort Impostor', 'Presentation Attack', 'Genuine']
   markers = ['x', 'o', 's']
 
   if scores.shape[1] > 2:
@@ -58,7 +58,7 @@ def plot_boundary_decision(algorithm, scores, score_labels, threshold,
   temp = algorithm.preprocess(temp)
   Z = (algorithm.fuse(temp) > threshold).reshape(xx.shape)
 
-  contourf = plt.contourf(xx, yy, Z, 1, alpha=1, cmap=plt.cm.viridis)
+  contourf = plt.contour(xx, yy, Z, 1, alpha=1, cmap=plt.cm.gray)
 
   if do_grouping:
     gen = grouping(X[Y == 0, :], **kwargs)
