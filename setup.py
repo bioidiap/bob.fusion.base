@@ -102,7 +102,7 @@ setup(
       # scripts should be declared using this entry:
       'console_scripts': [
         'bob_fuse.py     = bob.fusion.base.script.bob_fuse:main',
-        'plot_fusion_decision_boundary.py = bob.fusion.base.script.plot_fusion_decision_boundary:main',
+        'bob_fusion_decision_boundary.py = bob.fusion.base.script.bob_fusion_decision_boundary:main',
       ],
 
       'bob.fusion.algorithm': [
