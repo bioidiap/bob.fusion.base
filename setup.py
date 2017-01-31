@@ -15,7 +15,7 @@ setup(
     # information before releasing code publicly.
     name='bob.fusion.base',
     version=open("version.txt").read().rstrip(),
-    description='Tools for running score fusion in biometric experiments',
+    description='Score fusion in biometric experiments',
 
     url='https://gitlab.idiap.ch/bob/bob.fusion.base',
     license='GPLv3',

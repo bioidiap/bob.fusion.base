@@ -12,20 +12,20 @@ logger = bob.core.log.setup("bob.fusion.base")
 
 
 class Weighted_Sum(Algorithm):
-  """weighted sum (default: mean)"""
+    """weighted sum (default: mean)"""
 
-  def __init__(self, weights=None, *args, **kwargs):
-    super(Weighted_Sum, self).__init__(
-      classifier=self,
-      weights=weights,
-      *args, **kwargs)
-    self.weights = weights
+    def __init__(self, weights=None, *args, **kwargs):
+        super(Weighted_Sum, self).__init__(
+            classifier=self,
+            weights=weights,
+            *args, **kwargs)
+        self.weights = weights
 
-  def fit(self, X, y):
-    pass
+    def fit(self, X, y):
+        pass
 
-  def decision_function(self, scores):
-    if self.weights is None:
-      return numpy.mean(scores, axis=1)
-    else:
-      return numpy.sum(scores * self.weights, axis=1)
+    def decision_function(self, scores):
+        if self.weights is None:
+            return numpy.mean(scores, axis=1)
+        else:
+            return numpy.sum(scores * self.weights, axis=1)
