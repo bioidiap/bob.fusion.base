@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import warnings
 import numpy
 from numpy import array
 from tempfile import NamedTemporaryFile
@@ -7,6 +6,9 @@ import bob.fusion.base
 import bob.learn.linear
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
+import bob.core
+
+logger = bob.core.log.setup("bob.fusion.base")
 
 
 NEG = array([[-1.23594765, -2.59984279],
@@ -55,9 +57,8 @@ def run_steps(algorithm):
     try:
         assert str(algorithm) == str(loaded_algorithm)
     except Exception:
-        warnings.warn("String comparison of algorithms do not match which is OK.")
-        print(str(algorithm))
-        print(str(loaded_algorithm))
+        logger.warn("String comparison of algorithms do not match which is OK."
+                    "\n{}\n{}".format(str(algorithm), str(loaded_algorithm)))
     if algorithm.preprocessors:
         assert len(algorithm.preprocessors) == len(loaded_algorithm.preprocessors)
     assert fused.ndim == 1
@@ -140,6 +141,7 @@ def test_algorithm_llr_bob():
             prior=0.5, convergence_threshold=1e-5,
             max_iterations=10000, reg=1., mean_std_norm=False))
     neg, pos, fused, loaded_algorithm = run_steps(algorithm)
+    assert algorithm.machine.is_similar_to(loaded_algorithm.machine)
     assert str(algorithm) == "<class 'bob.fusion.base.algorithm.LLR.LLR'>(trainer=<type 'bob.learn.linear.CGLogRegTrainer'>, preprocessors=[StandardScaler(copy=True, with_mean=True, with_std=True)])"
 
     assert numpy.allclose(algorithm.machine.biases, array([0.04577333]), atol=0.05)
@@ -160,15 +162,6 @@ def test_weighted_sum_1():
     assert algorithm.weights == loaded_algorithm.weights
 
 
-def test_routine_fusion():
-    bob.fusion.base.script.bob_fuse.routine_fusion(algorithm, model_file,
-                                                   scores_train_lines, scores_train, train_neg, train_pos, fused_train_file,
-                                                   scores_dev_lines=None, scores_dev=None, dev_neg=None, dev_pos=None, fused_dev_file=None,
-                                                   scores_eval_lines=None, scores_eval=None, fused_eval_file=None,
-                                                   force=False, min_file_size=1000,
-                                                   )
-
-
 def test_weighted_sum_2():
     weights = [0.3, 0.7]
     algorithm = bob.fusion.base.algorithm.Weighted_Sum(weights=weights)
@@ -186,12 +179,49 @@ def test_mlp():
         preprocessors=[StandardScaler(**{'copy': True,
                                          'with_mean': True,
                                          'with_std': True})])
-    assert numpy.allclose(algorithm.machine.weights[0], array([[0.0097627, 0.01856892, 0.04303787],
-                                                               [0.06885315, 0.02055267, 0.07158912]]))
-    assert numpy.allclose(algorithm.machine.weights[1], array([[0.02471274],
-                                                               [0.02917882],
-                                                               [-0.02312366]]))
-    assert numpy.allclose(algorithm.machine.biases[0], array([0.00897664, 0.06945035, -0.01526904]))
-    assert numpy.allclose(algorithm.machine.biases[1], array([-0.01248256]))
+    assert numpy.allclose(algorithm.machine.weights[0],
+                          array([[0.0097627, 0.01856892, 0.04303787],
+                                 [0.06885315, 0.02055267, 0.07158912]]))
+    assert numpy.allclose(algorithm.machine.weights[1],
+                          array([[0.02471274],
+                                 [0.02917882],
+                                 [-0.02312366]]))
+    assert numpy.allclose(algorithm.machine.biases[0],
+                          array([0.00897664, 0.06945035, -0.01526904]))
+    assert numpy.allclose(algorithm.machine.biases[1],
+                          array([-0.01248256]))
     _, _, fused, loaded_algorithm = run_steps(algorithm)
-    assert numpy.allclose(fused, [-1, 1, -1, -1, -1, -1, -1, 1, 1, -1], atol=0.001)
+    assert algorithm.machine.is_similar_to(loaded_algorithm.machine)
+    assert numpy.allclose(fused,
+                          [-1, 1, -1, -1, -1, -1, -1, 1, 1, -1], atol=0.001)
+
+
+def test_gmm():
+    algorithm = bob.fusion.base.algorithm.GMM(
+       number_of_gaussians=None,
+       kmeans_training_iterations=25,
+       gmm_training_iterations=25,
+       training_threshold=5e-4,
+       variance_threshold=5e-4,
+       update_weights=True,
+       update_means=True,
+       update_variances=True,
+       responsibility_threshold=0,
+       init_seed=5489,)
+    _, _, fused, loaded_algorithm = run_steps(algorithm)
+    assert algorithm.machine.is_similar_to(loaded_algorithm.machine)
+    assert numpy.allclose(algorithm.machine.means,
+                          array([[5.26975462, 1.54563433],
+                                 [2.55902882, 2.71385423],
+                                 [4.38210031, 4.33636831]]))
+    assert numpy.allclose(algorithm.machine.variances,
+                          array([[5.00000000e-04, 5.00000000e-04],
+                                 [9.99478941e-01, 6.62039927e-01],
+                                 [2.28745081e-02, 1.78191869e-02]]))
+    assert numpy.allclose(algorithm.machine.weights,
+                          array([0.09999619, 0.7013807, 0.19862312]))
+    assert numpy.allclose(fused,
+                          array([-21.40306699, -11.52700531, -14.20002458,
+                                 -12.08667715, -17.16591322, -12.04539528,
+                                 -18.15526862, -9.27977024, -9.48558409,
+                                 -14.23620154]))
