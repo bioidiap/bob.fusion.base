@@ -20,6 +20,6 @@ Using ``sklearn`` classifiers and pre-processors you can implement different fus
 There are two scripts available in the package as of now and they work for verification scenarios.
 Spoofing and Anti-spoofing scenarios are not considered yet **in the scripts** however the Python API allows for easy extension.
 
-Also take a look at the scripts ``bob_fuse.py`` and ``plot_fusion_decision_boundary.py`` and use them for your actual fusion experiments.
+Also take a look at the scripts ``bob_fuse.py`` and ``bob_fusion_decision_boundary.py`` and use them for your actual fusion experiments.
 
 .. include:: links.rst
