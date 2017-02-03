@@ -3,7 +3,6 @@
 """Plot decision boundraries of the fusion algorithm."""
 
 import argparse
-import matplotlib.pyplot as plt
 import numpy as np
 
 import bob.fusion.base
@@ -168,6 +167,10 @@ def main(command_line_parameters=None):
     if args.group < 1:
         do_grouping = False
 
+    import matplotlib
+    if not hasattr(matplotlib, 'backends'):
+        matplotlib.use('pdf')
+    import matplotlib.pyplot as plt
     plot_boundary_decision(
         algorithm, scores, score_labels, args.threshold,
         do_grouping=do_grouping,
