@@ -85,7 +85,6 @@ def test_algorithm_llr_sklearn():
                                          'verbose': 0,
                                          'warm_start': False}))
     neg, pos, fused, loaded_algorithm = run_steps(algorithm)
-    assert str(algorithm) == "<class 'bob.fusion.base.algorithm.Algorithm.Algorithm'>(preprocessors=[StandardScaler(copy=True, with_mean=True, with_std=True)], classifier=LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,\n          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,\n          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,\n          verbose=0, warm_start=False))"
 
     assert numpy.allclose(algorithm.preprocessors[0].mean_, array([0.52676307, 0.09832188]))
     assert numpy.allclose(algorithm.preprocessors[0].scale_, array([2.857145, 2.98815147]))
@@ -142,7 +141,6 @@ def test_algorithm_llr_bob():
             max_iterations=10000, reg=1., mean_std_norm=False))
     neg, pos, fused, loaded_algorithm = run_steps(algorithm)
     assert algorithm.machine.is_similar_to(loaded_algorithm.machine)
-    assert str(algorithm) == "<class 'bob.fusion.base.algorithm.LLR.LLR'>(trainer=<type 'bob.learn.linear.CGLogRegTrainer'>, preprocessors=[StandardScaler(copy=True, with_mean=True, with_std=True)])"
 
     assert numpy.allclose(algorithm.machine.biases, array([0.04577333]), atol=0.05)
     assert numpy.allclose(algorithm.machine.weights, array([[1.33489128, 1.38092354]]), atol=0.05)
