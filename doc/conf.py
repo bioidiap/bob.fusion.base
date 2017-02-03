@@ -247,6 +247,8 @@ if os.path.exists(sphinx_requirements):
 else:
   intersphinx_mapping = link_documentation()
 
+# add scikit-learn intersphinx mapping
+intersphinx_mapping['http://scikit-learn.org/stable/'] = None
 
 # We want to remove all private (i.e. _. or __.__) members
 # that are not in the list of accepted functions
