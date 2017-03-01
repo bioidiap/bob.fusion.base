@@ -52,6 +52,8 @@ class Algorithm(object):
         """
         scores: numpy.ndarray with the shape of (n_samples, n_systems).
         returns the transformed scores."""
+        if scores.size == 0:
+            return scores
         if self.preprocessors is not None:
             for preprocessor in self.preprocessors:
                 scores = preprocessor.transform(scores)
