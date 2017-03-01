@@ -47,10 +47,12 @@ def routine_fusion(
 
     # preprocess data
     scores_train = algorithm.preprocess(scores_train)
-    train_neg, train_pos = algorithm.preprocess(train_neg), algorithm.preprocess(train_pos)
+    train_neg, train_pos = algorithm.preprocess(
+        train_neg), algorithm.preprocess(train_pos)
     if scores_dev is not None:
         scores_dev = algorithm.preprocess(scores_dev)
-        dev_neg, dev_pos = algorithm.preprocess(dev_neg), algorithm.preprocess(dev_pos)
+        dev_neg, dev_pos = algorithm.preprocess(
+            dev_neg), algorithm.preprocess(dev_pos)
     if scores_eval is not None:
         scores_eval = algorithm.preprocess(scores_eval)
 
@@ -69,7 +71,8 @@ def routine_fusion(
             "score file '%s' already exists.", fused_train_file)
     else:
         fused_scores_train = algorithm.fuse(scores_train)
-        save_fused_scores(fused_train_file, fused_scores_train, scores_train_lines)
+        save_fused_scores(fused_train_file,
+                          fused_scores_train, scores_train_lines)
 
     if scores_dev is not None:
         # fuse the scores (dev)
@@ -78,7 +81,8 @@ def routine_fusion(
                 "score file '%s' already exists.", fused_dev_file)
         else:
             fused_scores_dev = algorithm.fuse(scores_dev)
-            save_fused_scores(fused_dev_file, fused_scores_dev, scores_dev_lines)
+            save_fused_scores(
+                fused_dev_file, fused_scores_dev, scores_dev_lines)
 
     if scores_eval is not None:
         # fuse the scores (eval)
@@ -87,7 +91,8 @@ def routine_fusion(
                 "score file '%s' already exists.", fused_eval_file)
         else:
             fused_scores_eval = algorithm.fuse(scores_eval)
-            save_fused_scores(fused_eval_file, fused_scores_eval, scores_eval_lines)
+            save_fused_scores(
+                fused_eval_file, fused_scores_eval, scores_eval_lines)
 
 
 def fuse(args, command_line_parameters):
@@ -97,22 +102,31 @@ def fuse(args, command_line_parameters):
     write_info(args, command_line_parameters)
 
     # load the scores
+    logger.debug('The input score files for training are: ' +
+                 str(args.train_files))
     score_lines_list_train = [load_score(path, ncolumns=args.score_type)
                               for path in args.train_files]
     if args.dev_files:
+        logger.debug('The input score files for development are: ' +
+                     str(args.dev_files))
         score_lines_list_dev = [load_score(path, ncolumns=args.score_type)
                                 for path in args.dev_files]
     if args.eval_files:
+        logger.debug('The input score files for evaluation are: ' +
+                     str(args.eval_files))
         score_lines_list_eval = [load_score(path, ncolumns=args.score_type)
                                  for path in args.eval_files]
 
     # genuine, zero effort impostor, and attack list of
     # train, development and evaluation data.
-    idx1, gen_lt, zei_lt, atk_lt = get_gza_from_lines_list(score_lines_list_train)
+    idx1, gen_lt, zei_lt, atk_lt = get_gza_from_lines_list(
+        score_lines_list_train)
     if args.dev_files:
-        _, gen_ld, zei_ld, atk_ld = get_gza_from_lines_list(score_lines_list_dev)
+        _, gen_ld, zei_ld, atk_ld = get_gza_from_lines_list(
+            score_lines_list_dev)
     if args.eval_files:
-        _, gen_le, zei_le, atk_le = get_gza_from_lines_list(score_lines_list_eval)
+        _, gen_le, zei_le, atk_le = get_gza_from_lines_list(
+            score_lines_list_eval)
 
     # check if score lines are consistent
     if not args.skip_check:
@@ -131,14 +145,16 @@ def fuse(args, command_line_parameters):
     train_pos = get_scores(gen_lt)
     if args.dev_files:
         scores_dev = get_scores(gen_ld, zei_ld, atk_ld)
-        scores_dev_lines = get_score_lines(gen_ld[0:1], zei_ld[0:1], atk_ld[0:1])
+        scores_dev_lines = get_score_lines(
+            gen_ld[0:1], zei_ld[0:1], atk_ld[0:1])
         dev_neg = get_scores(zei_ld, atk_ld)
         dev_pos = get_scores(gen_ld)
     else:
         scores_dev, scores_dev_lines, dev_neg, dev_pos = None, None, None, None
     if args.eval_files:
         scores_eval = get_scores(gen_le, zei_le, atk_le)
-        scores_eval_lines = get_score_lines(gen_le[0:1], zei_le[0:1], atk_le[0:1])
+        scores_eval_lines = get_score_lines(
+            gen_le[0:1], zei_le[0:1], atk_le[0:1])
     else:
         scores_eval, scores_eval_lines = None, None
 
