@@ -12,7 +12,8 @@ from bob.measure.load import load_score, dump_score
 from bob.bio.base import utils
 
 from ..tools import parse_arguments, write_info, get_gza_from_lines_list, \
-    check_consistency, get_scores, remove_nan, get_score_lines, get_2negatives_1positive
+    check_consistency, get_scores, remove_nan, get_score_lines, \
+    get_2negatives_1positive
 
 import bob.core
 logger = bob.core.log.setup("bob.fusion.base")
@@ -29,12 +30,14 @@ def save_fused_scores(save_path, fused_scores, score_lines):
     dump_score(save_path + '-attack', atk)
 
 
-def routine_fusion(algorithm, model_file,
-                   scores_train_lines, scores_train, train_neg, train_pos, fused_train_file,
-                   scores_dev_lines=None, scores_dev=None, dev_neg=None, dev_pos=None, fused_dev_file=None,
-                   scores_eval_lines=None, scores_eval=None, fused_eval_file=None,
-                   force=False, min_file_size=1000,
-                   ):
+def routine_fusion(
+        algorithm, model_file,
+        scores_train_lines, scores_train, train_neg, train_pos,
+        fused_train_file,
+        scores_dev_lines=None, scores_dev=None, dev_neg=None, dev_pos=None,
+        fused_dev_file=None,
+        scores_eval_lines=None, scores_eval=None, fused_eval_file=None,
+        force=False, min_file_size=1000):
     # train the preprocessors
     train_scores = np.vstack((train_neg, train_pos))
     neg_len = train_neg.shape[0]
@@ -157,11 +160,11 @@ def fuse(args, command_line_parameters):
     if found_nan:
         logger.warn('Some nan values were removed.')
 
-    routine_fusion(algorithm, args.model_file,
-                   scores_train_lines, scores_train, train_neg, train_pos, args.fused_train_file,
-                   scores_dev_lines, scores_dev, dev_neg, dev_pos, args.fused_dev_file,
-                   scores_eval_lines, scores_eval, args.fused_eval_file,
-                   args.force)
+    routine_fusion(
+        algorithm, args.model_file, scores_train_lines, scores_train,
+        train_neg, train_pos, args.fused_train_file, scores_dev_lines,
+        scores_dev, dev_neg, dev_pos, args.fused_dev_file, scores_eval_lines,
+        scores_eval, args.fused_eval_file, args.force)
 
 
 def main(command_line_parameters=None):
