@@ -25,6 +25,8 @@ def save_fused_scores(save_path, fused_scores, score_lines):
     dump_score(save_path, score_lines)
     dump_score(save_path + '-licit', np.append(gen, zei))
     dump_score(save_path + '-spoof', np.append(gen, atk))
+    dump_score(save_path + '-real', np.append(gen, zei))
+    dump_score(save_path + '-attack', atk)
 
 
 def routine_fusion(algorithm, model_file,
