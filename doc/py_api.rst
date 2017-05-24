@@ -6,7 +6,7 @@ Python API
 This section includes information for using the Python API of
 ``bob.fusion.base``.
 
-=================
+
 Fusion Algorithms
 =================
 
@@ -15,7 +15,6 @@ Fusion Algorithms
    :undoc-members:
 
 
-==============
 Fusion Scripts
 ==============
 

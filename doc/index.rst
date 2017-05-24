@@ -7,10 +7,11 @@
  Score Fusion in Biometric Recognition Experiments
 ===================================================
 
+.. todolist::
+
 This package provides open source tools to run comparable and reproducible score
 fusion in biometric recognition experiments. It is written to be tightly
-integrated with bob_ and scikit-learn_. However you do not neccessairly need
-scikit-learn_ to use this package.
+integrated with bob_ and scikit-learn_.
 
 
 .. toctree::
