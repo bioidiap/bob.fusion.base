@@ -7,6 +7,8 @@
    :target: https://www.idiap.ch/software/bob/docs/latest/bob/bob.fusion.base/master/index.html
 .. image:: https://gitlab.idiap.ch/bob/bob.fusion.base/badges/master/build.svg
    :target: https://gitlab.idiap.ch/bob/bob.fusion.base/commits/master
+.. image:: https://gitlab.idiap.ch/bob/bob.fusion.base/badges/master/coverage.svg
+   :target: https://gitlab.idiap.ch/bob/bob.fusion.base/commits/master
 .. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
    :target: https://gitlab.idiap.ch/bob/bob.fusion.base
 .. image:: http://img.shields.io/pypi/v/bob.fusion.base.svg
@@ -28,11 +30,10 @@ fusion experiments.
 Installation
 ------------
 
-Follow our `installation`_ instructions. Then, using the Python interpreter
-provided by the distribution, bootstrap and buildout this package::
+Complete Bob's `installation`_ instructions. Then, to install this pacakge,
+run::
 
-  $ python bootstrap-buildout.py
-  $ ./bin/buildout
+  $ conda install bob.fusion.base
 
 
 Contact
