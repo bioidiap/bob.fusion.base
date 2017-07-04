@@ -13,8 +13,6 @@
    :target: https://gitlab.idiap.ch/bob/bob.fusion.base
 .. image:: http://img.shields.io/pypi/v/bob.fusion.base.svg
    :target: https://pypi.python.org/pypi/bob.fusion.base
-.. image:: http://img.shields.io/pypi/dm/bob.fusion.base.svg
-   :target: https://pypi.python.org/pypi/bob.fusion.base
 
 
 =======================================
