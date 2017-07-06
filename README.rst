@@ -2,9 +2,9 @@
 .. Tue Jan 31 17:29:53 CET 2017
 
 .. image:: http://img.shields.io/badge/docs-stable-yellow.svg
-   :target: http://pythonhosted.org/bob.fusion.base/index.html
+   :target: https://www.idiap.ch/software/bob/docs/bob/bob.fusion.base/stable/index.html
 .. image:: http://img.shields.io/badge/docs-latest-orange.svg
-   :target: https://www.idiap.ch/software/bob/docs/latest/bob/bob.fusion.base/master/index.html
+   :target: https://www.idiap.ch/software/bob/docs/bob/bob.fusion.base/master/index.html
 .. image:: https://gitlab.idiap.ch/bob/bob.fusion.base/badges/master/build.svg
    :target: https://gitlab.idiap.ch/bob/bob.fusion.base/commits/master
 .. image:: https://gitlab.idiap.ch/bob/bob.fusion.base/badges/master/coverage.svg
@@ -12,8 +12,6 @@
 .. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
    :target: https://gitlab.idiap.ch/bob/bob.fusion.base
 .. image:: http://img.shields.io/pypi/v/bob.fusion.base.svg
-   :target: https://pypi.python.org/pypi/bob.fusion.base
-.. image:: http://img.shields.io/pypi/dm/bob.fusion.base.svg
    :target: https://pypi.python.org/pypi/bob.fusion.base
 
 
@@ -30,7 +28,7 @@ fusion experiments.
 Installation
 ------------
 
-Complete Bob's `installation`_ instructions. Then, to install this pacakge,
+Complete Bob's `installation`_ instructions. Then, to install this package,
 run::
 
   $ conda install bob.fusion.base
