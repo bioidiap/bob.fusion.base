@@ -8,7 +8,7 @@ logger = bob.core.log.setup("bob.fusion.base")
 def get_2negatives_1positive(score_lines):
     gen_mask = score_lines['claimed_id'] == score_lines['real_id']
     atk_mask = np.logical_or(
-        np.char.count(score_lines['real_id'], 'spoof/') > 0,
+        np.char.count(score_lines['real_id'], 'spoof') > 0,
         np.char.count(score_lines['real_id'], 'attack') > 0)
     zei_mask = np.logical_and(np.logical_not(
         gen_mask), np.logical_not(atk_mask))

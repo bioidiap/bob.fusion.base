@@ -6,7 +6,7 @@ import tempfile
 import numpy
 from nose.tools import assert_raises
 from ..script.bob_fuse import main as bob_fuse
-from ..script.bob_fusion_decision_boundary import main as bob_fusion_decision_boundary
+from ..script.bob_fusion_decision_boundary import main as decision_boundary
 from bob.io.base.test_utils import datafile
 from bob.measure.load import load_score
 
@@ -14,12 +14,14 @@ train_files = [datafile("scores-train-1", 'bob.fusion.base', 'test/data'),
                datafile("scores-train-2", 'bob.fusion.base', 'test/data')]
 eval_files = [datafile("scores-eval-1", 'bob.fusion.base', 'test/data'),
               datafile("scores-eval-2", 'bob.fusion.base', 'test/data')]
-fused_train_files = [datafile('scores-fused-train', 'bob.fusion.base', 'test/data'),
-                     datafile('scores-fused-train-licit', 'bob.fusion.base', 'test/data'),
-                     datafile('scores-fused-train-spoof', 'bob.fusion.base', 'test/data')]
-fused_eval_files = [datafile('scores-fused-eval', 'bob.fusion.base', 'test/data'),
-                    datafile('scores-fused-eval-licit', 'bob.fusion.base', 'test/data'),
-                    datafile('scores-fused-eval-spoof', 'bob.fusion.base', 'test/data')]
+fused_train_files = [
+    datafile('scores-fused-train', 'bob.fusion.base', 'test/data'),
+    datafile('scores-fused-train-licit', 'bob.fusion.base', 'test/data'),
+    datafile('scores-fused-train-spoof', 'bob.fusion.base', 'test/data')]
+fused_eval_files = [
+    datafile('scores-fused-eval', 'bob.fusion.base', 'test/data'),
+    datafile('scores-fused-eval-licit', 'bob.fusion.base', 'test/data'),
+    datafile('scores-fused-eval-spoof', 'bob.fusion.base', 'test/data')]
 
 
 def compare_scores(path1, path2):
@@ -37,7 +39,8 @@ def test_bob_fuse():
     try:
         fused_train_file = os.path.join(tmpdir, 'scores-train')
         fused_eval_file = os.path.join(tmpdir, 'scores-eval')
-        cmd = ['-s', tmpdir, '-t'] + train_files + ['-e'] + eval_files + ['-T', fused_train_file, '-E', fused_eval_file, '-a', 'llr']
+        cmd = ['-s', tmpdir, '-t'] + train_files + ['-e'] + eval_files + \
+            ['-T', fused_train_file, '-E', fused_eval_file, '-a', 'llr']
         bob_fuse(cmd)
         compare_scores(fused_train_file, fused_train_files[0])
         compare_scores(fused_train_file + '-licit', fused_train_files[1])
@@ -60,7 +63,8 @@ def test_bob_fuse_train_only():
     tmpdir = tempfile.mkdtemp(prefix='bob_')
     try:
         fused_train_file = os.path.join(tmpdir, 'scores-train')
-        cmd = ['-s', tmpdir, '-t'] + train_files + ['-T', fused_train_file, '-a', 'llr']
+        cmd = ['-s', tmpdir, '-t'] + train_files + \
+            ['-T', fused_train_file, '-a', 'llr']
         bob_fuse(cmd)
         compare_scores(fused_train_file, fused_train_files[0])
         compare_scores(fused_train_file + '-licit', fused_train_files[1])
@@ -73,7 +77,8 @@ def test_bob_fuse_with_dev():
     tmpdir = tempfile.mkdtemp(prefix='bob_')
     try:
         fused_train_file = os.path.join(tmpdir, 'scores-train')
-        cmd = ['-s', tmpdir, '-t'] + train_files + ['-d'] + train_files + ['-T', fused_train_file, '-a', 'llr']
+        cmd = ['-s', tmpdir, '-t'] + train_files + ['-d'] + \
+            train_files + ['-T', fused_train_file, '-a', 'llr']
         bob_fuse(cmd)
     finally:
         shutil.rmtree(tmpdir, ignore_errors=True)
@@ -92,7 +97,8 @@ def test_bob_fuse_inconsistent():
             lines[0] = ' '.join(temp) + '\n'
             f1.writelines(lines)
 
-        cmd = ['-s', tmpdir, '-t'] + train_files[0:1] + [wrong_train2] + ['-T', fused_train_file, '-a', 'llr']
+        cmd = ['-s', tmpdir, '-t'] + train_files[0:1] + \
+            [wrong_train2] + ['-T', fused_train_file, '-a', 'llr']
         assert_raises(Exception, bob_fuse, cmd)
 
         # make inconsistency
@@ -106,33 +112,36 @@ def test_bob_fuse_inconsistent():
             f1.writelines(lines)
 
         # this should not raise an error
-        cmd = ['-s', tmpdir, '-t'] + train_files[0:1] + [wrong_train2] + ['-T', fused_train_file, '-a', 'llr', '--skip-check']
+        cmd = ['-s', tmpdir, '-t'] + train_files[0:1] + [wrong_train2] + \
+            ['-T', fused_train_file, '-a', 'llr', '--skip-check']
         bob_fuse(cmd)
     finally:
         shutil.rmtree(tmpdir, ignore_errors=True)
 
 
-def test_bob_fusion_decision_boundary():
+def test_decision_boundary():
     tmpdir = tempfile.mkdtemp(prefix='bob_')
     try:
         fused_train_file = os.path.join(tmpdir, 'scores-train')
-        cmd = ['-s', tmpdir, '-t'] + train_files + ['-T', fused_train_file, '-a', 'llr']
+        cmd = ['-s', tmpdir, '-t'] + train_files + \
+            ['-T', fused_train_file, '-a', 'llr']
         bob_fuse(cmd)
         # test plot
         model_file = os.path.join(tmpdir, 'Model.pkl')
         output = os.path.join(tmpdir, 'scatter.pdf')
         cmd = ['-e'] + eval_files + ['-m', model_file, '-t', '0', '-o', output]
-        bob_fusion_decision_boundary(cmd)
+        decision_boundary(cmd)
 
     finally:
         shutil.rmtree(tmpdir, ignore_errors=True)
 
 
-def test_bob_fusion_decision_boundary_grouping():
+def test_decision_boundary_grouping():
     tmpdir = tempfile.mkdtemp(prefix='bob_')
     try:
         fused_train_file = os.path.join(tmpdir, 'scores-train')
-        cmd = ['-s', tmpdir, '-t'] + train_files + ['-T', fused_train_file, '-a', 'llr']
+        cmd = ['-s', tmpdir, '-t'] + train_files + \
+            ['-T', fused_train_file, '-a', 'llr']
         bob_fuse(cmd)
         # test plot
         model_file = os.path.join(tmpdir, 'Model.pkl')
@@ -140,11 +149,11 @@ def test_bob_fusion_decision_boundary_grouping():
 
         cmd = ['-e'] + eval_files + ['-m', model_file, '-t', '0', '-o', output]
         cmd += ['-G', 'random', '-g', '50']
-        bob_fusion_decision_boundary(cmd)
+        decision_boundary(cmd)
 
         cmd = ['-e'] + eval_files + ['-m', model_file, '-t', '0', '-o', output]
         cmd += ['-G', 'kmeans', '-g', '50']
-        bob_fusion_decision_boundary(cmd)
+        decision_boundary(cmd)
 
     finally:
         shutil.rmtree(tmpdir, ignore_errors=True)
