@@ -63,9 +63,6 @@ def fuse(args, command_line_parameters):
   train_pos = get_scores(gen_lt)
   if args.dev_files:
     scores_dev = get_scores(gen_ld, zei_ld, atk_ld)
-    # scores_dev = get_scores(score_lines_list_dev)
-    # TEMPORARY CHANGE of DEV NEG set to include LICIT scenario
-    # dev_neg = get_scores(zei_ld)
     dev_neg = get_scores(zei_ld, atk_ld)
     dev_pos = get_scores(gen_ld)
   else:
@@ -102,10 +99,7 @@ def fuse(args, command_line_parameters):
   scores_train = algorithm.preprocess(scores_train)
   if args.dev_files:
     scores_dev = algorithm.preprocess(scores_dev)
-    ###### UNCOMMENT BACK AFTER ASVSpoof 2017 challenge #######
     dev_neg, dev_pos = algorithm.preprocess(dev_neg), algorithm.preprocess(dev_pos)
-    # dev_neg = None
-    # dev_pos = None
   if args.eval_files:
     scores_eval = algorithm.preprocess(scores_eval)
 

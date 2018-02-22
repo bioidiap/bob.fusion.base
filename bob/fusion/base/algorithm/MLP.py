@@ -46,16 +46,10 @@ class MLP(AlgorithmBob):
     else:
       self.machine.randomize()
 
-    # self.machine.hidden_activation = bob.learn.activation.Identity()
-    # self.machine.hidden_activation = bob.learn.activation.Logistic()
-
     self.trainer = self.trainer if self.trainer and not force else \
         bob.learn.mlp.RProp(1, bob.learn.mlp.SquareError(
             self.machine.output_activation), machine=self.machine,
             train_biases=False)
-        # bob.learn.mlp.RProp(1, bob.learn.mlp.CrossEntropyLoss(
-        #     self.machine.output_activation), machine=self.machine,
-        #     train_biases=False)
     self._kwargs.update({
         'seed': self.seed,
         'mlp_shape': self.mlp_shape,

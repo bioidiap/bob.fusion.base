@@ -223,16 +223,9 @@ class MLPTrainer(object):
     shuffler = bob.learn.mlp.DataShuffler(self.train, target)
     shuffler.auto_stdnorm = True
 
-    # shape = (shuffler.data_width, nhidden, 1)
-    # machine = bob.learn.mlp.Machine(self.shape)
-    # machine.activation = bob.learn.activation.HyperbolicTangent() #the
     # defaults are anyway Hyperbolic Tangent for hidden and output layer
     self.machine.input_subtract, self.machine.input_divide = \
         shuffler.stdnorm()
-
-    # trainer = bob.learn.mlp.RProp(
-    #     self.batch_size,
-    #     bob.learn.mlp.SquareError(machine.output_activation), machine)
 
     self.trainer.train_biases = True
 
