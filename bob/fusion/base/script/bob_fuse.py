@@ -17,6 +17,23 @@ import bob.core
 logger = bob.core.log.setup("bob.fusion.base")
 
 
+def fuse_and_dump_for_group(algorithm, group_file_name, preprocess_only, group_files,
+                            score_lines_list, idx1, nans, scores, gen, zei):
+    score_lines = score_lines_list[idx1][~nans]
+    if preprocess_only and len(group_files) == 1:
+      score_lines['score'] = np.reshape(scores, scores.shape[0])
+    else:
+      fused_scores_train = algorithm.fuse(scores)
+      score_lines['score'] = fused_scores_train
+    create_directories_safe(os.path.dirname(group_file_name))
+    dump_score(group_file_name, score_lines)
+    # to separate scores for licit and spoof scenarios
+    start_zei = len(gen[0])
+    start_atk = start_zei + len(zei[0])
+    dump_score(group_file_name + '-licit', score_lines[0:start_atk])
+    dump_score(group_file_name + '-spoof', np.append(score_lines[0:start_zei], score_lines[start_atk:-1]))
+
+
 def fuse(args, command_line_parameters):
   """Do the actual fusion."""
   algorithm = args.algorithm
@@ -118,38 +135,15 @@ def fuse(args, command_line_parameters):
       logger.info(
         "- Fusion: scores '%s' already exists.", args.fused_train_file)
     elif args.train_files:
-      score_lines = score_lines_list_train[idx1][~nan_train]
-      if args.preprocess_only and len(args.train_files) == 1:
-        score_lines['score'] = np.reshape(scores_train, scores_train.shape[0])
-      else:
-        fused_scores_train = algorithm.fuse(scores_train)
-        score_lines['score'] = fused_scores_train
-      create_directories_safe(os.path.dirname(args.fused_train_file))
-      dump_score(args.fused_train_file, score_lines)
-      # to separate scores for licit and spoof scenarios
-      start_zei = len(gen_lt[0])
-      start_atk = start_zei + len(zei_lt[0])
-      dump_score(args.fused_train_file + '-licit', score_lines[0:start_atk])
-      dump_score(args.fused_train_file + '-spoof', np.append(score_lines[0:start_zei], score_lines[start_atk:-1]))
-
+      fuse_and_dump_for_group(algorithm, args.fused_train_file, args.preprocess_only, args.train_files,
+                              score_lines_list_train, idx1, nan_train, scores_train, gen_lt, zei_lt)
   # fuse the scores (dev)
   if utils.check_file(args.fused_dev_file, args.force, 1000):
     logger.info(
       "- Fusion: scores '%s' already exists.", args.fused_dev_file)
   elif args.dev_files:
-    score_lines = score_lines_list_dev[idx1][~nan_dev]
-    if args.preprocess_only and len(args.dev_files) == 1:
-      score_lines['score'] = np.reshape(scores_dev, scores_dev.shape[0])
-    else:
-      fused_scores_dev = algorithm.fuse(scores_dev)
-      score_lines['score'] = fused_scores_dev
-    create_directories_safe(os.path.dirname(args.fused_dev_file))
-    dump_score(args.fused_dev_file, score_lines)
-    # to separate scores for licit and spoof scenarios
-    start_zei = len(gen_ld[0])
-    start_atk = start_zei + len(zei_ld[0])
-    dump_score(args.fused_dev_file+'-licit', score_lines[0:start_atk])
-    dump_score(args.fused_dev_file+'-spoof', np.append(score_lines[0:start_zei], score_lines[start_atk:-1]))
+    fuse_and_dump_for_group(algorithm, args.fused_dev_file, args.preprocess_only, args.dev_files,
+                            score_lines_list_dev, idx1, nan_dev, scores_dev, gen_ld, zei_ld)
 
   # fuse the scores (eval)
   if args.eval_files:
@@ -157,19 +151,8 @@ def fuse(args, command_line_parameters):
       logger.info(
         "- Fusion: scores '%s' already exists.", args.fused_eval_file)
     else:
-      score_lines = score_lines_list_eval[idx1][~nan_eval]
-      if args.preprocess_only and len(args.eval_files) == 1:
-        score_lines['score'] = np.reshape(scores_eval, scores_eval.shape[0])
-      else:
-        fused_scores_eval = algorithm.fuse(scores_eval)
-        score_lines['score'] = fused_scores_eval
-      create_directories_safe(os.path.dirname(args.fused_eval_file))
-      dump_score(args.fused_eval_file, score_lines)
-      # to separate scores for licit and spoof scenarios
-      start_zei = len(gen_le[0])
-      start_atk = start_zei + len(zei_le[0])
-      dump_score(args.fused_eval_file + '-licit', score_lines[0:start_atk])
-      dump_score(args.fused_eval_file + '-spoof', np.append(score_lines[0:start_zei], score_lines[start_atk:-1]))
+      fuse_and_dump_for_group(algorithm, args.fused_eval_file, args.preprocess_only, args.eval_files,
+                              score_lines_list_eval, idx1, nan_eval, scores_eval, gen_le, zei_le)
 
 
 def main(command_line_parameters=None):
