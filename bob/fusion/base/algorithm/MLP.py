@@ -9,6 +9,7 @@ import bob.io.base
 
 from .AlgorithmBob import AlgorithmBob
 from .mlp_train_helper import MLPTrainer
+import bob.learn.activation
 
 import bob.core
 logger = bob.core.log.setup("bob.fusion.base")
@@ -44,10 +45,17 @@ class MLP(AlgorithmBob):
       self.machine.randomize(rng=self.rng)
     else:
       self.machine.randomize()
+
+    # self.machine.hidden_activation = bob.learn.activation.Identity()
+    # self.machine.hidden_activation = bob.learn.activation.Logistic()
+
     self.trainer = self.trainer if self.trainer and not force else \
         bob.learn.mlp.RProp(1, bob.learn.mlp.SquareError(
             self.machine.output_activation), machine=self.machine,
             train_biases=False)
+        # bob.learn.mlp.RProp(1, bob.learn.mlp.CrossEntropyLoss(
+        #     self.machine.output_activation), machine=self.machine,
+        #     train_biases=False)
     self._kwargs.update({
         'seed': self.seed,
         'mlp_shape': self.mlp_shape,

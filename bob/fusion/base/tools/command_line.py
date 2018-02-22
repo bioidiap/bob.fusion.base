@@ -65,6 +65,8 @@ def command_line_parser(description=__doc__, exclude_resources_from=[]):
   parser.add_argument('--filter-scores', action='store_true',
                       help='If provided, score files are filtered across all systems to the smallest common subset '
                            'of files.')
+  parser.add_argument('-P', '--preprocess-only', action='store_true',
+                      help='Do not perform fustion, but preprocess the scores only. The output are preprocessed scores.')
   parser.add_argument('-s', '--save-directory', help='The directory to save '
                       'the experiment artifacts.', default='fusion_result')
 

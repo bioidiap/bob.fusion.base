@@ -64,6 +64,8 @@ def fuse(args, command_line_parameters):
   if args.dev_files:
     scores_dev = get_scores(gen_ld, zei_ld, atk_ld)
     # scores_dev = get_scores(score_lines_list_dev)
+    # TEMPORARY CHANGE of DEV NEG set to include LICIT scenario
+    # dev_neg = get_scores(zei_ld)
     dev_neg = get_scores(zei_ld, atk_ld)
     dev_pos = get_scores(gen_ld)
   else:
@@ -88,14 +90,22 @@ def fuse(args, command_line_parameters):
     logger.warn('Some nan values were removed.')
 
   # train the preprocessors
-  algorithm.train_preprocessors(scores_train)
+  pos_len = len(gen_lt[0])
+  y = np.zeros((scores_train.shape[0],), dtype='bool')
+  # y = np.zeros((len(gen_lt[0])+len(zei_lt[0]),), dtype='bool')  # uncomment for calibration of ASV only
+  y[:pos_len] = True
+  # algorithm.train_preprocessors(scores_train[:len(gen_lt[0])+len(zei_lt[0]),:], y) # uncomment for calibration of ASV only
+  algorithm.train_preprocessors(scores_train, y)
 
   # preprocess data
   train_neg, train_pos = algorithm.preprocess(train_neg), algorithm.preprocess(train_pos)
   scores_train = algorithm.preprocess(scores_train)
   if args.dev_files:
     scores_dev = algorithm.preprocess(scores_dev)
+    ###### UNCOMMENT BACK AFTER ASVSpoof 2017 challenge #######
     dev_neg, dev_pos = algorithm.preprocess(dev_neg), algorithm.preprocess(dev_pos)
+    # dev_neg = None
+    # dev_pos = None
   if args.eval_files:
     scores_eval = algorithm.preprocess(scores_eval)
 
@@ -104,9 +114,9 @@ def fuse(args, command_line_parameters):
     logger.info(
       "- Fusion: model '%s' already exists.", args.model_file)
     algorithm = algorithm.load(args.model_file)
-  else:
-    algorithm.train(train_neg, train_pos, dev_neg, dev_pos)
-    algorithm.save(args.model_file)
+  elif not args.preprocess_only:
+      algorithm.train(train_neg, train_pos, dev_neg, dev_pos)
+      algorithm.save(args.model_file)
 
   # fuse the scores (train) - we need these sometimes
   if args.fused_train_file is not None:
@@ -114,34 +124,38 @@ def fuse(args, command_line_parameters):
       logger.info(
         "- Fusion: scores '%s' already exists.", args.fused_train_file)
     elif args.train_files:
-      fused_scores_train = algorithm.fuse(scores_train)
       score_lines = score_lines_list_train[idx1][~nan_train]
-      score_lines['score'] = fused_scores_train
+      if args.preprocess_only and len(args.train_files) == 1:
+        score_lines['score'] = np.reshape(scores_train, scores_train.shape[0])
+      else:
+        fused_scores_train = algorithm.fuse(scores_train)
+        score_lines['score'] = fused_scores_train
       create_directories_safe(os.path.dirname(args.fused_train_file))
       dump_score(args.fused_train_file, score_lines)
       # to separate scores for licit and spoof scenarios
       start_zei = len(gen_lt[0])
       start_atk = start_zei + len(zei_lt[0])
       dump_score(args.fused_train_file + '-licit', score_lines[0:start_atk])
-      import numpy
-      dump_score(args.fused_train_file + '-spoof', numpy.append(score_lines[0:start_zei], score_lines[start_atk:-1]))
+      dump_score(args.fused_train_file + '-spoof', np.append(score_lines[0:start_zei], score_lines[start_atk:-1]))
 
   # fuse the scores (dev)
   if utils.check_file(args.fused_dev_file, args.force, 1000):
     logger.info(
       "- Fusion: scores '%s' already exists.", args.fused_dev_file)
   elif args.dev_files:
-    fused_scores_dev = algorithm.fuse(scores_dev)
     score_lines = score_lines_list_dev[idx1][~nan_dev]
-    score_lines['score'] = fused_scores_dev
+    if args.preprocess_only and len(args.dev_files) == 1:
+      score_lines['score'] = np.reshape(scores_dev, scores_dev.shape[0])
+    else:
+      fused_scores_dev = algorithm.fuse(scores_dev)
+      score_lines['score'] = fused_scores_dev
     create_directories_safe(os.path.dirname(args.fused_dev_file))
     dump_score(args.fused_dev_file, score_lines)
     # to separate scores for licit and spoof scenarios
     start_zei = len(gen_ld[0])
     start_atk = start_zei + len(zei_ld[0])
     dump_score(args.fused_dev_file+'-licit', score_lines[0:start_atk])
-    import numpy
-    dump_score(args.fused_dev_file+'-spoof', numpy.append(score_lines[0:start_zei], score_lines[start_atk:-1]))
+    dump_score(args.fused_dev_file+'-spoof', np.append(score_lines[0:start_zei], score_lines[start_atk:-1]))
 
   # fuse the scores (eval)
   if args.eval_files:
@@ -149,23 +163,26 @@ def fuse(args, command_line_parameters):
       logger.info(
         "- Fusion: scores '%s' already exists.", args.fused_eval_file)
     else:
-      fused_scores_eval = algorithm.fuse(scores_eval)
       score_lines = score_lines_list_eval[idx1][~nan_eval]
-      score_lines['score'] = fused_scores_eval
+      if args.preprocess_only and len(args.eval_files) == 1:
+        score_lines['score'] = np.reshape(scores_eval, scores_eval.shape[0])
+      else:
+        fused_scores_eval = algorithm.fuse(scores_eval)
+        score_lines['score'] = fused_scores_eval
       create_directories_safe(os.path.dirname(args.fused_eval_file))
       dump_score(args.fused_eval_file, score_lines)
       # to separate scores for licit and spoof scenarios
       start_zei = len(gen_le[0])
       start_atk = start_zei + len(zei_le[0])
       dump_score(args.fused_eval_file + '-licit', score_lines[0:start_atk])
-      import numpy
-      dump_score(args.fused_eval_file + '-spoof', numpy.append(score_lines[0:start_zei], score_lines[start_atk:-1]))
+      dump_score(args.fused_eval_file + '-spoof', np.append(score_lines[0:start_zei], score_lines[start_atk:-1]))
 
 
 def main(command_line_parameters=None):
   """Executes the main function"""
   try:
     # do the command line parsing
+    args = parse_arguments(command_line_parameters)
     args = parse_arguments(command_line_parameters)
 
     # perform face verification test

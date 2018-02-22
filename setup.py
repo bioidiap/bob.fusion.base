@@ -112,6 +112,7 @@ setup(
         'llr-skl     = bob.fusion.base.config.algorithm.llr_skl:algorithm',
         'plr-2       = bob.fusion.base.config.algorithm.plr_2:algorithm',
         'mlp         = bob.fusion.base.config.algorithm.mlp:algorithm',
+        'calibrate        = bob.fusion.base.config.algorithm.calibrate:algorithm',
       ],
 
         },

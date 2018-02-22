@@ -2,7 +2,7 @@ from . import algorithm
 from . import tools
 from . import config
 from . import script
-
+from . import preprocessor
 def get_config():
   """Returns a string containing the configuration information.
   """

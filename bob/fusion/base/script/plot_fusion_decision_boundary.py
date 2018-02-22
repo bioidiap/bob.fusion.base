@@ -3,7 +3,7 @@
 """Plot decision boundraries of the fusion algorithm."""
 
 import argparse
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import numpy as np
 
 import bob.fusion.base
@@ -43,14 +43,14 @@ def draw_line(machine, devel_thres, fig):
 
     ax = fig.axes
     # line = Line2D(x, y, color='black', label = 'decision boundary', linewidth=2)
-    line = Line2D(xlim, ylim, color='black', label='decision boundary', linewidth=2)
+    line = Line2D(xlim, ylim, color='black', label='Decision boundary', linewidth=2)
     ax[0].add_line(line)
 
 
 def plot_scatter(algorithm, scores, score_labels, threshold, i1 = 0, i2 = 1):
 
     import matplotlib;
-    matplotlib.use('pdf')  # avoids TkInter threaded start
+    # matplotlib.use('pdf')  # avoids TkInter threaded start
     from matplotlib.backends.backend_pdf import PdfPages
     import matplotlib.font_manager as fm
 
@@ -78,19 +78,20 @@ def plot_scatter(algorithm, scores, score_labels, threshold, i1 = 0, i2 = 1):
     # alpha_scheme = {'genuine':0.9, 'impostors':0.8, 'spoofs':0.3}
 
     mpl.plot(zei[imp_range, 0], zei[imp_range, 1], '^', color=color_scheme['impostors'],
-             label='Impostors', alpha=alpha_scheme['impostors'])
+             label='Zero-effort Impostors', alpha=alpha_scheme['impostors'])
     mpl.plot(atk[att_range, 0], atk[att_range, 1], 's', color=color_scheme['spoofs'],
-             label='Spoofing attacks', alpha=alpha_scheme['spoofs'])
+             label='Presentation Attacks', alpha=alpha_scheme['spoofs'])
     mpl.plot(gen[racc_range, 0], gen[racc_range, 1], 'o', color=color_scheme['genuine'],
-             label='Genuine accesses', alpha=alpha_scheme['genuine'])  # alpha = 0.2
+             label='Genuine Users', alpha=alpha_scheme['genuine'])  # alpha = 0.2
     draw_line(algorithm, threshold, fig)
     mpl.legend(prop=fm.FontProperties(size=16), loc=3)  # loc=1
 
     # plt.xlim([-6, 1.5])
     # plt.ylim([-10, 1.5])
 
-    mpl.xlabel('PAD1 scores')
-    mpl.ylabel('PAD2 scores')
+    mpl.xlabel('PAD scores')
+    # mpl.ylabel('PAD2 scores')
+    mpl.ylabel('Verification scores')
     mpl.grid()
     pp.savefig()
 
@@ -210,14 +211,14 @@ def main(command_line_parameters=None):
     bob.core.log.set_verbosity_level(logger, args.verbose)
 
     # load the algorithm
-    algorithm = bob.fusion.base.algorithm.Algorithm()
-    algorithm = algorithm.load(args.model_file)
+    # algorithm = bob.fusion.base.algorithm.Algorithm()
+    # algorithm = algorithm.load(args.model_file)
 
     hdf5_path = os.path.splitext(args.model_file)[0] + '.hdf5'
     machine = None
-    # if os.path.isfile(hdf5_path):
-    #     hdf5file = bob.io.base.HDF5File(hdf5_path)
-    #     machine = bob.learn.linear.Machine(hdf5file)
+    if os.path.isfile(hdf5_path):
+        hdf5file = bob.io.base.HDF5File(hdf5_path)
+        machine = bob.learn.linear.Machine(hdf5file)
 
     # load the scores
     score_lines_list_eval = [load_score(path, ncolumns=args.score_type)
@@ -226,7 +227,7 @@ def main(command_line_parameters=None):
     # genuine, zero effort impostor, and attack list
     idx1, gen_le, zei_le, atk_le = get_gza_from_lines_list(score_lines_list_eval)
 
-    # filter_to_common_scores(gen_le, zei_le, atk_le)
+    filter_to_common_scores(gen_le, zei_le, atk_le)
 
     # check if score lines are consistent
     if not args.skip_check:
@@ -251,15 +252,15 @@ def main(command_line_parameters=None):
     if args.group < 1:
         do_grouping = False
 
-    plot_boundary_decision(
-        algorithm, scores, score_labels, args.threshold,
-        do_grouping=do_grouping,
-        npoints=args.group,
-        seed=0,
-        gformat=args.grouping
-    )
-    plt.savefig(args.output)
-    plt.close()
+    # plot_boundary_decision(
+    #     algorithm, scores, score_labels, args.threshold,
+    #     do_grouping=do_grouping,
+    #     npoints=args.group,
+    #     seed=0,
+    #     gformat=args.grouping
+    # )
+    # plt.savefig(args.output)
+    # plt.close()
 
     if machine is not None:
         plot_scatter(machine, scores, score_labels, args.threshold)

@@ -41,12 +41,12 @@ class Algorithm(object):
     if classifier is not self:
       self._kwargs['classifier'] = classifier
 
-  def train_preprocessors(self, X):
+  def train_preprocessors(self, X, y=None):
     """Train preprocessors in order.
     X: numpy.ndarray with the shape of (n_samples, n_systems)."""
     if self.preprocessors is not None:
       for preprocessor in self.preprocessors:
-        X = preprocessor.fit_transform(X)
+        X = preprocessor.fit_transform(X, y)
 
   def preprocess(self, scores):
     """

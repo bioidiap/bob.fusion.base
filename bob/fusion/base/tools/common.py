@@ -7,8 +7,10 @@ logger = bob.core.log.setup("bob.fusion.base")
 
 def get_2negatives_1positive(score_lines):
     gen_mask = score_lines['claimed_id'] == score_lines['real_id']
+    check_attacks = np.array([False if len(a) == 3 else True for a in score_lines['real_id']])
     atk_mask = np.logical_or(np.char.count(score_lines['real_id'], 'spoof/') > 0,
-                             np.char.count(score_lines['real_id'], 'attack') > 0)
+                             np.char.count(score_lines['real_id'], 'attack') > 0,
+                             check_attacks)
     zei_mask = np.logical_and(np.logical_not(gen_mask), np.logical_not(atk_mask))
     gen = score_lines[gen_mask]
     zei = score_lines[zei_mask]
@@ -44,6 +46,10 @@ def check_consistency(gen_l, zei_l, atk_l):
             continue
         score_lines0 = score_lines_list[0]
         for score_lines in score_lines_list[1:]:
+            # print(len(score_lines['claimed_id']))
+            # print(len(score_lines0['claimed_id']))
+            # print(score_lines0['claimed_id'])
+            # print(score_lines['claimed_id'])
             assert (np.all(score_lines['claimed_id'] == score_lines0['claimed_id']))
             assert (np.all(score_lines['real_id'] == score_lines0['real_id']))
 
@@ -99,7 +105,11 @@ def get_gza_from_lines_list(score_lines_list):
                                           gen_l[idx2]['test_label'] == test_label)
                     # sometimes an PAD does not have scores corresponding to files from ASV zei
                     # if np.any(idx3) and np.any(idx4):
-                    temp['score'][idx3] = gen_l[idx2]['score'][idx4]
+                    try:
+                        temp['score'][idx3] = gen_l[idx2]['score'][idx4]
+                    except ValueError:
+                        raise ValueError("Trying to assign gen_l[idx2]['score'][idx4]=%s to %s, real_id=%s, test_label=%s" %
+                                         (str(gen_l[idx2]['score'][idx4]), str(temp['score'][idx3]), str(real_id), str(test_label)))
             # remove NaN when PAD zie < ASV zei
             # nans = np.isnan(temp['score'])
             # temp = temp[~nans]

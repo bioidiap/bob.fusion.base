@@ -41,7 +41,7 @@ def main(command_line_parameters=None):
 
     parser.add_argument('-a', '--fusion-algorithm', default='and', required=True,
                         help="The type of algorithm used for fusion (defaults to '%(default)s')",
-                        choices=('and', 'llr', 'mlp', 'plr-2', 'mean'))
+                        choices=('and', 'llr-skl', 'llr', 'mlp', 'plr-2', 'mean'))
 
     parser.add_argument('-d', '--dataset-name-train', required=True,
                         help='The name of the dataset which was used to compute TRAIN and DEV scores.')
@@ -55,6 +55,10 @@ def main(command_line_parameters=None):
     parser.add_argument('-g', '--score-group', nargs='+', default='dev', required=True,
                         help="Which set(s) of scores we fuse (defaults to '%(default)s')",
                         choices=('dev', 'eval'))
+
+    parser.add_argument('-O', '--final-fusion-name', default='', required=False,
+                        help="The name of the final fusion system. If not given, the name of fused systems "
+                             "are concatenated.")
 
     bob.core.log.add_command_line_option(parser)
 
@@ -100,10 +104,16 @@ def main(command_line_parameters=None):
 
     # add the rest of the parameters
     command_line_parameters.extend(['-a', args.fusion_algorithm])
-    command_line_parameters.extend(['-T', 'scores-train', '-vvv'])
-    # command_line_parameters.extend(['--force', '-vvv'])
+    command_line_parameters.extend(['-T', 'scores-train'])
+    command_line_parameters.extend(['--force', '-vvv'])
     # command_line_parameters.extend(['--filter-scores', '-vvv'])
-    out_dir = '-'.join([args.out_directory, args.fusion_type] + args.system_names + [args.dataset_name_eval, args.fusion_algorithm])
+    if args.final_fusion_name:
+        out_dir = '-'.join([args.out_directory, args.fusion_type] + [args.final_fusion_name] + [args.dataset_name_eval, args.fusion_algorithm])
+    else:
+        out_dir = '-'.join([args.out_directory, args.fusion_type] + args.system_names + [args.dataset_name_eval, args.fusion_algorithm])
+    # out_dir = '-'.join([args.out_directory, args.fusion_type, "cpqd_idiap_10gmmsystems", args.dataset_name_eval, args.fusion_algorithm])
+    # out_dir = '-'.join([args.out_directory, args.fusion_type, "cpqd_idiap_10systems", args.dataset_name_eval, args.fusion_algorithm])
+    # out_dir = '-'.join([args.out_directory, args.fusion_type, "cpqd_8_ffnngmm_systems", args.dataset_name_eval, args.fusion_algorithm])
     command_line_parameters.extend(['-s', out_dir])
 
     logger.info("Starting fusion script with the following command line parameters:\n %s", ' '.join(command_line_parameters))
