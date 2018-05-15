@@ -11,7 +11,7 @@ setup(
 
     name='bob.fusion.base',
     version=open("version.txt").read().rstrip(),
-    description='Score fusion in biometric experiments',
+    description='Score fusion in biometric and pad experiments',
 
     url='https://gitlab.idiap.ch/bob/bob.fusion.base',
     license='GPLv3',
@@ -29,29 +29,36 @@ setup(
 
     entry_points={
 
-      'console_scripts': [
-        'bob_fuse.py     = bob.fusion.base.script.bob_fuse:main',
-        'bob_fusion_decision_boundary.py = bob.fusion.base.script.bob_fusion_decision_boundary:main',
-      ],
+        # main entry for bob fusion cli
+        'bob.cli': [
+            'fusion = bob.fusion.base.script.fusion:fusion',
+        ],
 
-      'bob.fusion.algorithm': [
-        'mean        = bob.fusion.base.config.algorithm.mean:algorithm',
-        'llr         = bob.fusion.base.config.algorithm.llr:algorithm',
-        'llr-skl     = bob.fusion.base.config.algorithm.llr_skl:algorithm',
-        'plr-2       = bob.fusion.base.config.algorithm.plr_2:algorithm',
-        'mlp         = bob.fusion.base.config.algorithm.mlp:algorithm',
-        'gmm         = bob.fusion.base.config.algorithm.gmm:algorithm',
-      ],
+        # bob fusion scripts
+        'bob.fusion.cli': [
+            'fuse = bob.fusion.base.script.fuse:fuse',
+            'resource = bob.fusion.base.script.resource:resource',
+            'boundary = bob.fusion.base.script.boundary:boundary',
+        ],
 
-        },
+        'bob.fusion.algorithm': [
+            'mean        = bob.fusion.base.config.algorithm.mean:algorithm',
+            'llr         = bob.fusion.base.config.algorithm.llr:algorithm',
+            'llr-skl     = bob.fusion.base.config.algorithm.llr_skl:algorithm',
+            'plr-2       = bob.fusion.base.config.algorithm.plr_2:algorithm',
+            'mlp         = bob.fusion.base.config.algorithm.mlp:algorithm',
+            'gmm         = bob.fusion.base.config.algorithm.gmm:algorithm',
+        ],
+
+    },
 
     classifiers=[
-      'Framework :: Bob',
-      'Development Status :: 3 - Alpha',
-      'Intended Audience :: Developers',
-      'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-      'Natural Language :: English',
-      'Programming Language :: Python',
-      'Topic :: Scientific/Engineering :: Artificial Intelligence',
+        'Framework :: Bob',
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Natural Language :: English',
+        'Programming Language :: Python',
+        'Topic :: Scientific/Engineering :: Artificial Intelligence',
     ],
 )

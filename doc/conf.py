@@ -25,18 +25,12 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
+    'sphinx.ext.mathjax',
     #'matplotlib.sphinxext.plot_directive'
     ]
 
-import sphinx
-if sphinx.__version__ >= "1.4.1":
-    extensions.append('sphinx.ext.imgmath')
-    imgmath_image_format = 'svg'
-else:
-    extensions.append('sphinx.ext.pngmath')
-
 # Be picky about warnings
-nitpicky = False
+nitpicky = True
 
 # Ignores stuff we can't easily resolve on other project's sphinx manuals
 nitpick_ignore = []
@@ -132,7 +126,7 @@ pygments_style = 'sphinx'
 
 # Some variables which are useful for generated material
 project_variable = project.replace('.', '_')
-short_description = u'Score fusion in biometric experiments'
+short_description = u'Score fusion in biometric and pad experiments'
 owner = [u'Idiap Research Institute']
 
 
@@ -246,8 +240,6 @@ if os.path.exists(sphinx_requirements):
 else:
   intersphinx_mapping = link_documentation()
 
-# add scikit-learn intersphinx mapping
-intersphinx_mapping['http://scikit-learn.org/stable/'] = None
 
 # We want to remove all private (i.e. _. or __.__) members
 # that are not in the list of accepted functions

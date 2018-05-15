@@ -1,2 +1,4 @@
-from . import bob_fuse
-from . import bob_fusion_decision_boundary
+from .fuse import routine_fusion
+
+# gets sphinx autodoc done right - don't remove it
+__all__ = [_ for _ in dir() if not _.startswith('_')]

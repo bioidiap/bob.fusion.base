@@ -20,7 +20,8 @@ def get_2negatives_1positive(score_lines):
 
 def check_consistency(gen_l, zei_l, atk_l):
     if len(gen_l) < 2:
-        logger.error('Check failed since less than two system is available.')
+        raise ValueError(
+            'Check failed since less than two system is available.')
     for score_lines_list in (gen_l, zei_l, atk_l):
         if not score_lines_list:
             continue

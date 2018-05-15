@@ -25,15 +25,24 @@ class MLP(AlgorithmBob):
                  seed=None,
                  machine=None,
                  trainer=None,
-                 *args, **kwargs):
-        super(MLP, self).__init__(
-            classifier=self,
-            *args, **kwargs)
+                 batch_size=1,
+                 epoch=1,
+                 max_iter=1000,
+                 no_improvements=0,
+                 valley_condition=1,
+                 **kwargs):
+        super(MLP, self).__init__(classifier=self, **kwargs)
         self.mlp_shape = [n_systems] + list(hidden_layers) + [1]
         self.seed = seed
         self.machine = machine
         self.trainer = trainer
-        self._my_kwargs = kwargs
+        self._mlp_trainer_args = {
+            'batch_size': batch_size,
+            'epoch': epoch,
+            'max_iter': max_iter,
+            'no_improvements': no_improvements,
+            'valley_condition': valley_condition,
+        }
         self.initialize()
 
     def initialize(self, force=False):
@@ -48,21 +57,21 @@ class MLP(AlgorithmBob):
             bob.learn.mlp.RProp(1, bob.learn.mlp.SquareError(
                 self.machine.output_activation), machine=self.machine,
                 train_biases=False)
-        self._kwargs.update({
+        self.str.update({
             'seed': self.seed,
             'mlp_shape': self.mlp_shape,
             'machine': str(self.machine),
             'trainer': str(type(self.trainer))})
-        self._kwargs.update(self._my_kwargs)
 
     def prepare_train(self, train, devel):
         (negatives, positives) = train
         n_systems = negatives.shape[1]
         if n_systems != self.mlp_shape[0]:
             logger.warn(
-                'Reinitializing the MLP machine with the shape of {} to {} to match th'
-                'e input size.'.format(self.mlp_shape,
-                                       [n_systems] + self.mlp_shape[1:]))
+                'Reinitializing the MLP machine with the shape of {} to {} to '
+                'match the input size.'.format(self.mlp_shape,
+                                               [n_systems] +
+                                               self.mlp_shape[1:]))
             self.mlp_shape = [n_systems] + self.mlp_shape[1:]
             self.n_systems = n_systems
             self.hidden_layers = self.mlp_shape[1:-1]
@@ -73,7 +82,7 @@ class MLP(AlgorithmBob):
             mlp_shape=self.mlp_shape,
             machine=self.machine,
             trainer=self.trainer,
-            **self._my_kwargs)
+            **self._mlp_trainer_args)
 
     def train(self, train_neg, train_pos, devel_neg=None, devel_pos=None):
         if devel_neg is None:

@@ -14,12 +14,12 @@ logger = bob.core.log.setup("bob.fusion.base")
 class Weighted_Sum(Algorithm):
     """weighted sum (default: mean)"""
 
-    def __init__(self, weights=None, *args, **kwargs):
+    def __init__(self, weights=None, **kwargs):
         super(Weighted_Sum, self).__init__(
             classifier=self,
-            weights=weights,
-            *args, **kwargs)
+            **kwargs)
         self.weights = weights
+        self.str['weights'] = weights
 
     def fit(self, X, y):
         pass

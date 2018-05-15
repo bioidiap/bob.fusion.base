@@ -16,15 +16,13 @@ class LLR(AlgorithmBob):
 
     def __init__(self,
                  trainer=None,
-                 *args, **kwargs):
+                 **kwargs):
         self.trainer = trainer if trainer else \
             bob.learn.linear.CGLogRegTrainer()
         # this is needed to be able to load the machine
         self.machine = bob.learn.linear.Machine()
-        super(LLR, self).__init__(
-            classifier=self,
-            trainer=str(type(self.trainer)),
-            *args, **kwargs)
+        super(LLR, self).__init__(classifier=self, **kwargs)
+        self.str['trainer'] = str(type(self.trainer))
 
     def train(self, train_neg, train_pos, devel_neg=None, devel_pos=None):
         # Trainning the LLR machine

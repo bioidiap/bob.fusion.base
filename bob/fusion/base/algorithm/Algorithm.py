@@ -11,35 +11,45 @@ logger = bob.core.log.setup("bob.fusion.base")
 
 
 class Algorithm(object):
-    """A class to be used in score fusion"""
+    """A class to be used in score fusion
+
+    Attributes
+    ----------
+    classifier
+    preprocessors
+    str : dict
+        A dictionary that its content will printed in the __str__ method.
+    """
 
     def __init__(self,
                  preprocessors=None,
                  classifier=None,
-                 *args,
                  **kwargs
                  ):
         """
-    preprocessors: A list of preprocessors that follow the API of
-        :py:meth:`sklearn.preprocessing.StandardScaler`. Especially `fit_transform`
-        and `transform` must be implemented.
+        preprocessors: A list of
 
-    classifier: An instance of a class that implements `fit(X[, y])` and
-        `decision_function(X)` like:
-        :py:meth:`sklearn.linear_model.LogisticRegression`
+        classifier:
 
-    kwargs : ``key=value`` pairs
-        A list of keyword arguments to be written in the
-            :py:meth:`__str__` function.
-
-"""
-        super(Algorithm, self).__init__()
+        Parameters
+        ----------
+        preprocessors : list
+            An optional list of preprocessors that follow the API of
+            :any:`sklearn.preprocessing.StandardScaler`. Especially
+            `fit_transform` and `transform` must be implemented.
+        classifier
+            An instance of a class that implements `fit(X[, y])` and
+            `decision_function(X)` like:
+            :any:`sklearn.linear_model.LogisticRegression`
+        **kwargs
+            All extra
+        """
+        super(Algorithm, self).__init__(**kwargs)
         self.classifier = classifier
         self.preprocessors = preprocessors
-        self._kwargs = kwargs
-        self._kwargs['preprocessors'] = preprocessors
+        self.str = {'preprocessors': preprocessors}
         if classifier is not self:
-            self._kwargs['classifier'] = classifier
+            self.str['classifier'] = classifier
 
     def train_preprocessors(self, X, y=None):
         """Train preprocessors in order.
@@ -102,7 +112,7 @@ class Algorithm(object):
         """
         return "%s(%s)" % (str(self.__class__), ", ".join(
             ["%s=%s" % (key, value) for key, value in
-             self._kwargs.items() if value is not None]))
+             self.str.items() if value is not None]))
 
     def save(self, model_file):
         """Save the instance of the algorithm.

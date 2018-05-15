@@ -15,14 +15,14 @@
    :target: https://pypi.python.org/pypi/bob.fusion.base
 
 
-=======================================
- Score fusion in biometric experiments
-=======================================
+=========================================================================
+ Score Fusion in Biometric Recognition and Presentation Attack Detection
+=========================================================================
 
 This package is part of the signal-processing and machine learning toolbox
-Bob_. It runs score fusin in biometric experiments using various algorithms. It
-provides several algorithms and scripts to be used for running and reporting
-fusion experiments.
+Bob_. It runs score fusion in biometric and presentation attack detection
+experiments using various algorithms. It provides several algorithms and
+scripts to be used for running and reporting fusion experiments.
 
 
 Installation
