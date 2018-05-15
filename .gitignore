@@ -11,3 +11,5 @@ src
 develop-eggs
 sphinx
 dist
+build/
+record.txt

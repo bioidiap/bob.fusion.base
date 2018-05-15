@@ -7,6 +7,8 @@ import bob.learn.em
 def grouping(scores, gformat='random', npoints=500, seed=None, **kwargs):
 
     scores = numpy.asarray(scores)
+    if scores.size == 0:
+        return scores
 
     if(gformat == "kmeans"):
         kmeans_machine = bob.learn.em.KMeansMachine(npoints, 2)

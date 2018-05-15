@@ -1,16 +1,19 @@
-#!/usr/bin/env python
-
-"""Plot decision boundraries of the fusion algorithm."""
-
-import argparse
+"""Plots the decision boundaries of fusion algorithms.
+"""
+from __future__ import print_function, absolute_import, division
+import logging
+import click
+from bob.extension.scripts.click_helper import verbosity_option
 import numpy as np
 
-import bob.fusion.base
-import bob.core
-from bob.measure.load import load_score
-from ..tools import grouping, get_gza_from_lines_list, \
-    get_scores, remove_nan, check_consistency
-logger = bob.core.log.setup("bob.fusion.base")
+from bob.bio.base.score import load_score
+
+from ..tools import (
+    get_gza_from_lines_list, check_consistency, get_scores, remove_nan,
+    grouping)
+from ..algorithm import Algorithm
+
+logger = logging.getLogger(__name__)
 
 
 def plot_boundary_decision(algorithm, scores, score_labels, threshold,
@@ -24,24 +27,18 @@ def plot_boundary_decision(algorithm, scores, score_labels, threshold,
                            legends=None,
                            i1=0,
                            i2=1,
+                           x_label=None,
+                           y_label=None,
                            **kwargs
                            ):
-    '''
-    Plots the boundary decision of the Algorithm
-
-    @param score_labels np.array A (scores.shape[0]) array containing
-                                                                    the true labels of scores.
-
-    @param threshold    float       threshold of the decision boundary
-    '''
     if legends is None:
         legends = ['Zero Effort Impostor', 'Presentation Attack', 'Genuine']
     markers = ['x', 'o', 's']
 
     if scores.shape[1] > 2:
         raise NotImplementedError(
-            "Currently plotting the decision boundary for more than two systems "
-            "is not supported.")
+            "Currently plotting the decision boundary for more than two "
+            "systems is not supported.")
 
     import matplotlib.pyplot as plt
     plt.gca()  # this is necessary for subplots to work.
@@ -71,6 +68,8 @@ def plot_boundary_decision(algorithm, scores, score_labels, threshold,
         atk = X[Y == 2, :]
     colors = plt.cm.viridis(np.linspace(0, 1, 3))
     for i, X in enumerate((zei, atk, gen)):
+        if X.size == 0:
+            continue
         plt.scatter(
             X[:, 0], X[:, 1], marker=markers[i], alpha=alpha,
             c=colors[i], label=legends[i])
@@ -84,68 +83,65 @@ def plot_boundary_decision(algorithm, scores, score_labels, threshold,
 
     plt.xlim([x_min, x_max])
     plt.ylim([y_min, y_max])
-    plt.grid('on')
+    plt.grid(True)
 
-    plt.xlabel('Face recognition scores')
-    plt.ylabel('PAD scores')
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
 
     return contourf
 
 
-def main(command_line_parameters=None):
+@click.command()
+@click.argument('scores', nargs=-1, required=True,
+                type=click.Path(exists=True))
+@click.option('-m', '--model-file', required=True,
+              help='The path to where the algorithm will be loaded from.')
+@click.option('-t', '--threshold', type=click.FLOAT, required=True,
+              help='The threshold to classify scores after fusion. Usually '
+              'calculated from fused development set.')
+@click.option('-g', '--group', type=click.INT, default=0, show_default=True,
+              help='If given scores will be grouped into N samples.')
+@click.option('-G', '--grouping', type=click.Choice(('random', 'kmeans')),
+              default='kmeans', show_default=True,
+              help='The gouping algorithm to be used.')
+@click.option('-o', '--output', required=True, default='scatter.pdf',
+              show_default=True, type=click.Path(writable=True),
+              help='The path to the saved plot.')
+@click.option('-X', '--x-label', default='Recognition scores',
+              show_default=True)
+@click.option('-Y', '--y-label', default='PAD scores', show_default=True)
+@click.option('--skip-check', is_flag=True, show_default=True,
+              help='If True, it will skip checking for the consistency '
+              'between scores.')
+@verbosity_option()
+def boundary(scores, model_file, threshold, group, grouping, output, x_label,
+             y_label, skip_check):
+    """Plots the decision boundaries of fusion algorithms.
 
-    # setup command line parameters
-    parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    The script takes several scores (usually eval scores) from different
+    biometric and pad systems and a trained algorithm and plots the decision
+    boundary.
 
-    parser.add_argument('-e', '--eval-files', nargs='+', required=True,
-                        help='A list of score files to be plotted usually the '
-                        'evaluation set.')
+    \b
+    Examples:
+    $ bob fusion boundary -vvv {sys1,sys2}/scores-eval -m /path/saved_model.pkl
 
-    parser.add_argument('-m', '--model-file', required=True,
-                        help='Path to Model.pkl of a saved bob.fusion.algorithm.')
-
-    parser.add_argument('-t', '--threshold', type=float, default=0, required=True,
-                        help='The threshold to classify scores after fusion.'
-                        'Usually calculated from fused development set.')
-
-    parser.add_argument('-o', '--output', default='scatter.pdf',
-                        help='The path to save the plot.')
-
-    parser.add_argument('-g', '--group', default=0, type=int,
-                        help='If given scores will be grouped into N samples.')
-
-    parser.add_argument('-G', '--grouping', choices=('random', 'kmeans'),
-                        default='kmeans',
-                        help='The gouping algorithm to be used.')
-
-    parser.add_argument('--skip-check', action='store_true',
-                        help='If provided, score files are not checked '
-                        'for consistency')
-
-    parser.add_argument('--score-type', choices=(4, 5), default=None,
-                        help='The format the scores are provided.')
-
-    bob.core.log.add_command_line_option(parser)
-
-    # parse command line options
-    args = parser.parse_args(command_line_parameters)
-    bob.core.log.set_verbosity_level(logger, args.verbose)
-
+    You need to provide two score files from two systems. System 1 will be
+    plotted on the x-axis.
+    """
     # load the algorithm
-    algorithm = bob.fusion.base.algorithm.Algorithm()
-    algorithm = algorithm.load(args.model_file)
+    algorithm = Algorithm()
+    algorithm = algorithm.load(model_file)
 
     # load the scores
-    score_lines_list_eval = [load_score(path, ncolumns=args.score_type)
-                             for path in args.eval_files]
+    score_lines_list_eval = [load_score(path) for path in scores]
 
     # genuine, zero effort impostor, and attack list
-    idx1, gen_le, zei_le, atk_le = get_gza_from_lines_list(score_lines_list_eval)
+    idx1, gen_le, zei_le, atk_le = get_gza_from_lines_list(
+        score_lines_list_eval)
 
     # check if score lines are consistent
-    if not args.skip_check:
+    if not skip_check:
         check_consistency(gen_le, zei_le, atk_le)
 
     # concatenate the scores and create the labels
@@ -164,7 +160,7 @@ def main(command_line_parameters=None):
 
     # plot the decision boundary
     do_grouping = True
-    if args.group < 1:
+    if group < 1:
         do_grouping = False
 
     import matplotlib
@@ -172,15 +168,13 @@ def main(command_line_parameters=None):
         matplotlib.use('pdf')
     import matplotlib.pyplot as plt
     plot_boundary_decision(
-        algorithm, scores, score_labels, args.threshold,
+        algorithm, scores, score_labels, threshold,
         do_grouping=do_grouping,
-        npoints=args.group,
+        npoints=group,
         seed=0,
-        gformat=args.grouping
+        gformat=grouping,
+        x_label=x_label,
+        y_label=y_label,
     )
-    plt.savefig(args.output, transparent=True)
+    plt.savefig(output, transparent=True)
     plt.close()
-
-
-if __name__ == '__main__':
-    main()

@@ -14,12 +14,10 @@ logger = bob.core.log.setup("bob.fusion.base")
 class AND(Algorithm):
     """This algorithm fuses several systems with cascading."""
 
-    def __init__(self, thresholds=None, *args, **kwargs):
-        super(AND, self).__init__(
-            classifier=self,
-            thresholds=thresholds,
-            *args, **kwargs)
+    def __init__(self, thresholds=None, **kwargs):
+        super(AND, self).__init__(classifier=self, **kwargs)
         self.thresholds = thresholds
+        self.str['thresholds'] = thresholds
 
     def fit(self, X, y):
         pass

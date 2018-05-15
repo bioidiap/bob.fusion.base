@@ -36,20 +36,18 @@ class GMM(AlgorithmBob):
                  # current mean and variance.
                  responsibility_threshold=0,
                  init_seed=5489,
-                 *args, **kwargs):
-        super(GMM, self).__init__(
-            classifier=self,
-            number_of_gaussians=number_of_gaussians,
-            kmeans_training_iterations=kmeans_training_iterations,
-            gmm_training_iterations=gmm_training_iterations,
-            training_threshold=training_threshold,
-            variance_threshold=variance_threshold,
-            update_weights=update_weights,
-            update_means=update_means,
-            update_variances=update_variances,
-            responsibility_threshold=responsibility_threshold,
-            init_seed=init_seed,
-            *args, **kwargs)
+                 **kwargs):
+        super(GMM, self).__init__(classifier=self, **kwargs)
+        self.str['number_of_gaussians'] = number_of_gaussians
+        self.str['kmeans_training_iterations'] = kmeans_training_iterations
+        self.str['gmm_training_iterations'] = gmm_training_iterations
+        self.str['training_threshold'] = training_threshold
+        self.str['variance_threshold'] = variance_threshold
+        self.str['update_weights'] = update_weights
+        self.str['update_means'] = update_means
+        self.str['update_variances'] = update_variances
+        self.str['responsibility_threshold'] = responsibility_threshold
+        self.str['init_seed'] = init_seed
 
         # copy parameters
         self.gaussians = number_of_gaussians

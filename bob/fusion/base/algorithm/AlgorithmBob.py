@@ -24,7 +24,7 @@ class AlgorithmBob(Algorithm):
             pickle.dump(type(self), f)
             pickle.dump(self.preprocessors, f)
             # just for consistent string representation
-            pickle.dump(self._kwargs, f)
+            pickle.dump(self.str, f)
 
         d5 = bob.io.base.HDF5File(self._get_hdf5_file(model_file), "w")
         try:
@@ -37,11 +37,11 @@ class AlgorithmBob(Algorithm):
         with open(model_file, "rb") as f:
             myclass = pickle.load(f)
             preprocessors = pickle.load(f)
-            _kwargs = pickle.load(f)
+            strings = pickle.load(f)
 
         myinstance = myclass(preprocessors=preprocessors)
         # just for consistent string representation
-        myinstance._kwargs.update(_kwargs)
+        myinstance.str.update(strings)
 
         d5 = bob.io.base.HDF5File(self._get_hdf5_file(model_file))
         try:

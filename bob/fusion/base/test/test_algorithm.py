@@ -155,7 +155,7 @@ def test_algorithm_llr_bob():
 def test_weighted_sum_1():
     algorithm = bob.fusion.base.algorithm.Weighted_Sum()
     neg, pos, fused, loaded_algorithm = run_steps(algorithm)
-    assert str(algorithm) == "<class 'bob.fusion.base.algorithm.Weighted_Sum.Weighted_Sum'>()"
+    assert str(algorithm) == "<class 'bob.fusion.base.algorithm.Weighted_Sum'>()"
     assert numpy.allclose(fused, numpy.mean(TEST, axis=1))
     assert algorithm.weights == loaded_algorithm.weights
 
@@ -165,7 +165,7 @@ def test_weighted_sum_2():
     algorithm = bob.fusion.base.algorithm.Weighted_Sum(weights=weights)
     neg, pos, fused, loaded_algorithm = run_steps(algorithm)
     assert str(
-        algorithm) == "<class 'bob.fusion.base.algorithm.Weighted_Sum.Weighted_Sum'>(weights=[0.3, 0.7])"
+        algorithm) == "<class 'bob.fusion.base.algorithm.Weighted_Sum'>(weights=[0.3, 0.7])"
     assert numpy.allclose(fused, numpy.sum(TEST * weights, axis=1))
     assert algorithm.weights == loaded_algorithm.weights
 

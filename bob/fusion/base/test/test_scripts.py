@@ -5,10 +5,11 @@ import shutil
 import tempfile
 import numpy
 from nose.tools import assert_raises
-from ..script.bob_fuse import main as bob_fuse
-from ..script.bob_fusion_decision_boundary import main as decision_boundary
+from ..script.fuse import fuse
+from ..script.boundary import boundary
 from bob.io.base.test_utils import datafile
-from bob.measure.load import load_score
+from bob.bio.base.score import load_score
+from click.testing import CliRunner
 
 train_files = [datafile("scores-train-1", 'bob.fusion.base', 'test/data'),
                datafile("scores-train-2", 'bob.fusion.base', 'test/data')]
@@ -34,62 +35,51 @@ def compare_scores(path1, path2):
             assert all(score1[name] == score2[name])
 
 
-def test_bob_fuse():
-    tmpdir = tempfile.mkdtemp(prefix='bob_')
-    try:
-        fused_train_file = os.path.join(tmpdir, 'scores-train')
-        fused_eval_file = os.path.join(tmpdir, 'scores-eval')
-        cmd = ['-s', tmpdir, '-t'] + train_files + ['-e'] + eval_files + \
-            ['-T', fused_train_file, '-E', fused_eval_file, '-a', 'llr']
-        bob_fuse(cmd)
+def test_fuse():
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        fused_train_file = os.path.join('fusion_result', 'scores-train')
+        fused_eval_file = os.path.join('fusion_result', 'scores-eval')
+        cmd = [x for xy in zip(train_files, eval_files) for x in xy] + \
+            ['-g', 'train', '-g', 'eval', '-a', 'llr']
+        for _ in range(2):
+            result = runner.invoke(fuse, cmd)
+            assert result.exit_code == 0
+            compare_scores(fused_train_file, fused_train_files[0])
+            compare_scores(fused_train_file + '-licit', fused_train_files[1])
+            compare_scores(fused_train_file + '-spoof', fused_train_files[2])
+            compare_scores(fused_eval_file, fused_eval_files[0])
+            compare_scores(fused_eval_file + '-licit', fused_eval_files[1])
+            compare_scores(fused_eval_file + '-spoof', fused_eval_files[2])
+
+
+def test_fuse_train_only():
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        fused_train_file = os.path.join('fusion_result', 'scores-train')
+        cmd = train_files + \
+            ['-g', 'train', '-a', 'llr']
+        result = runner.invoke(fuse, cmd)
+        assert result.exit_code == 0
         compare_scores(fused_train_file, fused_train_files[0])
         compare_scores(fused_train_file + '-licit', fused_train_files[1])
         compare_scores(fused_train_file + '-spoof', fused_train_files[2])
-        compare_scores(fused_eval_file, fused_eval_files[0])
-        compare_scores(fused_eval_file + '-licit', fused_eval_files[1])
-        compare_scores(fused_eval_file + '-spoof', fused_eval_files[2])
-        bob_fuse(cmd)
-        compare_scores(fused_train_file, fused_train_files[0])
-        compare_scores(fused_train_file + '-licit', fused_train_files[1])
-        compare_scores(fused_train_file + '-spoof', fused_train_files[2])
-        compare_scores(fused_eval_file, fused_eval_files[0])
-        compare_scores(fused_eval_file + '-licit', fused_eval_files[1])
-        compare_scores(fused_eval_file + '-spoof', fused_eval_files[2])
-    finally:
-        shutil.rmtree(tmpdir, ignore_errors=True)
 
 
-def test_bob_fuse_train_only():
-    tmpdir = tempfile.mkdtemp(prefix='bob_')
-    try:
-        fused_train_file = os.path.join(tmpdir, 'scores-train')
-        cmd = ['-s', tmpdir, '-t'] + train_files + \
-            ['-T', fused_train_file, '-a', 'llr']
-        bob_fuse(cmd)
-        compare_scores(fused_train_file, fused_train_files[0])
-        compare_scores(fused_train_file + '-licit', fused_train_files[1])
-        compare_scores(fused_train_file + '-spoof', fused_train_files[2])
-    finally:
-        shutil.rmtree(tmpdir, ignore_errors=True)
+def test_fuse_with_dev():
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        cmd = train_files + train_files + \
+            ['-g', 'train', '-g', 'dev', '-a', 'llr']
+        result = runner.invoke(fuse, cmd)
+        assert result.exit_code == 0
 
 
-def test_bob_fuse_with_dev():
-    tmpdir = tempfile.mkdtemp(prefix='bob_')
-    try:
-        fused_train_file = os.path.join(tmpdir, 'scores-train')
-        cmd = ['-s', tmpdir, '-t'] + train_files + ['-d'] + \
-            train_files + ['-T', fused_train_file, '-a', 'llr']
-        bob_fuse(cmd)
-    finally:
-        shutil.rmtree(tmpdir, ignore_errors=True)
-
-
-def test_bob_fuse_inconsistent():
-    tmpdir = tempfile.mkdtemp(prefix='bob_')
-    try:
-        fused_train_file = os.path.join(tmpdir, 'scores-train')
+def test_fuse_inconsistent():
+    runner = CliRunner()
+    with runner.isolated_filesystem():
         # make inconsistency
-        wrong_train2 = os.path.join(tmpdir, 'scores-train-2')
+        wrong_train2 = 'scores-train-2'
         with open(wrong_train2, 'w') as f1, open(train_files[1]) as f2:
             lines = f2.readlines()
             temp = lines[0].split()
@@ -97,63 +87,57 @@ def test_bob_fuse_inconsistent():
             lines[0] = ' '.join(temp) + '\n'
             f1.writelines(lines)
 
-        cmd = ['-s', tmpdir, '-t'] + train_files[0:1] + \
-            [wrong_train2] + ['-T', fused_train_file, '-a', 'llr']
-        assert_raises(Exception, bob_fuse, cmd)
+        cmd = train_files[0:1] + [wrong_train2] + \
+            ['-g', 'train', '-a', 'llr']
+        result = runner.invoke(fuse, cmd)
+        assert result.exit_code == -1, result.exit_code
+        assert isinstance(result.exception, ValueError)
 
         # make inconsistency
-        wrong_train2 = os.path.join(tmpdir, 'scores-train-1')
+        wrong_train2 = 'scores-train-1'
         with open(wrong_train2, 'w') as f1, open(train_files[0]) as f2:
             lines = f2.readlines()
             temp = lines[5].split()
-            print(temp)
             temp = (temp[0], '200', temp[2], temp[3])
             lines[5] = ' '.join(temp) + '\n'
             f1.writelines(lines)
 
-        # this should not raise an error
-        cmd = ['-s', tmpdir, '-t'] + train_files[0:1] + [wrong_train2] + \
-            ['-T', fused_train_file, '-a', 'llr', '--skip-check']
-        bob_fuse(cmd)
-    finally:
-        shutil.rmtree(tmpdir, ignore_errors=True)
+        cmd = train_files[0:1] + [wrong_train2] + \
+            ['-g', 'train', '-a', 'llr', '--skip-check']
+        result = runner.invoke(fuse, cmd)
+        assert result.exit_code == 0, result.exit_code
+        assert not result.exception, result.exception
 
 
-def test_decision_boundary():
-    tmpdir = tempfile.mkdtemp(prefix='bob_')
-    try:
-        fused_train_file = os.path.join(tmpdir, 'scores-train')
-        cmd = ['-s', tmpdir, '-t'] + train_files + \
-            ['-T', fused_train_file, '-a', 'llr']
-        bob_fuse(cmd)
-        # test plot
-        model_file = os.path.join(tmpdir, 'Model.pkl')
-        output = os.path.join(tmpdir, 'scatter.pdf')
-        cmd = ['-e'] + eval_files + ['-m', model_file, '-t', '0', '-o', output]
-        decision_boundary(cmd)
+def test_boundary():
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        cmd = train_files + \
+            ['-g', 'train', '-a', 'llr']
+        result = runner.invoke(fuse, cmd)
+        assert result.exit_code == 0
 
-    finally:
-        shutil.rmtree(tmpdir, ignore_errors=True)
+        model_file = 'fusion_result/Model.pkl'
+        cmd = eval_files + ['-m', model_file, '-t', '0']
+        result = runner.invoke(boundary, cmd)
+        assert result.exit_code == 0
 
 
-def test_decision_boundary_grouping():
-    tmpdir = tempfile.mkdtemp(prefix='bob_')
-    try:
-        fused_train_file = os.path.join(tmpdir, 'scores-train')
-        cmd = ['-s', tmpdir, '-t'] + train_files + \
-            ['-T', fused_train_file, '-a', 'llr']
-        bob_fuse(cmd)
-        # test plot
-        model_file = os.path.join(tmpdir, 'Model.pkl')
-        output = os.path.join(tmpdir, 'scatter.pdf')
+def test_boundary_grouping():
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        cmd = train_files + \
+            ['-g', 'train', '-a', 'llr']
+        result = runner.invoke(fuse, cmd)
+        assert result.exit_code == 0
 
-        cmd = ['-e'] + eval_files + ['-m', model_file, '-t', '0', '-o', output]
-        cmd += ['-G', 'random', '-g', '50']
-        decision_boundary(cmd)
+        model_file = 'fusion_result/Model.pkl'
+        cmd1 = eval_files + ['-m', model_file, '-t', '0']
 
-        cmd = ['-e'] + eval_files + ['-m', model_file, '-t', '0', '-o', output]
-        cmd += ['-G', 'kmeans', '-g', '50']
-        decision_boundary(cmd)
+        cmd = cmd1 + ['-G', 'random', '-g', '50']
+        result = runner.invoke(boundary, cmd)
+        assert result.exit_code == 0
 
-    finally:
-        shutil.rmtree(tmpdir, ignore_errors=True)
+        cmd = cmd1 + ['-G', 'kmeans', '-g', '50']
+        result = runner.invoke(boundary, cmd)
+        assert result.exit_code == 0
