@@ -32,13 +32,15 @@ requirements:
     - setuptools
     - matplotlib
     - numpy
-  run_constrained:
     - scikit-learn
 
 test:
   imports:
     - {{ name }}
   commands:
+    - bob fusion fuse --help
+    - bob fusion resource --help
+    - bob fusion boundary --help
     - nosetests --with-coverage --cover-package={{ name }} -sv {{ name }}
     - sphinx-build -aEW {{ project_dir }}/doc {{ project_dir }}/sphinx
     - sphinx-build -aEb doctest {{ project_dir }}/doc sphinx

@@ -27,13 +27,9 @@ class Algorithm(object):
                  **kwargs
                  ):
         """
-        preprocessors: A list of
-
-        classifier:
-
         Parameters
         ----------
-        preprocessors : list
+        preprocessors : :any:`list`
             An optional list of preprocessors that follow the API of
             :any:`sklearn.preprocessing.StandardScaler`. Especially
             `fit_transform` and `transform` must be implemented.
