@@ -1,4 +1,4 @@
-"""A script to plot the decision boundaries.
+"""Plots the decision boundaries of fusion algorithms.
 """
 from __future__ import print_function, absolute_import, division
 import logging
@@ -116,7 +116,7 @@ def plot_boundary_decision(algorithm, scores, score_labels, threshold,
 @verbosity_option()
 def boundary(scores, model_file, threshold, group, grouping, output, x_label,
              y_label, skip_check):
-    """Plots the decision boundary.
+    """Plots the decision boundaries of fusion algorithms.
 
     The script takes several scores (usually eval scores) from different
     biometric and pad systems and a trained algorithm and plots the decision
