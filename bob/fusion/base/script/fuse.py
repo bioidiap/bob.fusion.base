@@ -60,15 +60,15 @@ def routine_fusion(
         scores_dev_lines=None, scores_dev=None, dev_neg=None, dev_pos=None,
         fused_dev_file=None,
         scores_eval_lines=None, scores_eval=None, fused_eval_file=None,
-        force=False, min_file_size=1000):
+        force=False, min_file_size=1000, do_training=True):
 
     # load the model if model_file exists and no training data was provided
-    if scores_train is None and os.path.exists(model_file):
+    if os.path.exists(model_file) and not do_training:
         logger.info("Loading the algorithm from %s", model_file)
         algorithm = algorithm.load(model_file)
 
     # train the preprocessors
-    if train_neg is not None:
+    if train_neg is not None and do_training:
         train_scores = np.vstack((train_neg, train_pos))
         neg_len = train_neg.shape[0]
         y = np.zeros((train_scores.shape[0],), dtype='bool')
@@ -90,7 +90,7 @@ def routine_fusion(
         scores_eval = algorithm.preprocess(scores_eval)
 
     # Train the classifier
-    if train_neg is not None:
+    if train_neg is not None and do_training:
         if utils.check_file(model_file, force, min_file_size):
             logger.info(
                 "model '%s' already exists.", model_file)
@@ -182,7 +182,8 @@ def fuse(scores, algorithm, groups, output_dir, model_file, skip_check, force,
         The list of score files. The scores must correspond to the groups
         parameter and scores of each system will come after the last one.
     algorithm : :any:`bob.fusion.algorithm.Algorithm`
-        The fusion algorithm.
+        The fusion algorithm. It can be provided using `bob.fusion.algorithm`
+        setuptools entry-points or config files.
     groups : [str]
         The groups of the scores. This should correspond to the scores that are
         provided. The order of options are important and should be in the same
@@ -196,6 +197,7 @@ def fuse(scores, algorithm, groups, output_dir, model_file, skip_check, force,
     force : bool, optional
         Whether to overwrite existing files.
 
+    \b
     Raises
     ------
     click.BadArgumentUsage
@@ -205,7 +207,10 @@ def fuse(scores, algorithm, groups, output_dir, model_file, skip_check, force,
     """
     create_directories_safe(output_dir)
     if not model_file:
+        do_training = True
         model_file = os.path.join(output_dir, 'Model.pkl')
+    else:
+        do_training = False
     fused_train_file = os.path.join(output_dir, 'scores-train')
     fused_dev_file = os.path.join(output_dir, 'scores-dev')
     fused_eval_file = os.path.join(output_dir, 'scores-eval')
@@ -319,4 +324,4 @@ def fuse(scores, algorithm, groups, output_dir, model_file, skip_check, force,
         algorithm, model_file, scores_train_lines, scores_train,
         train_neg, train_pos, fused_train_file, scores_dev_lines,
         scores_dev, dev_neg, dev_pos, fused_dev_file, scores_eval_lines,
-        scores_eval, fused_eval_file, force)
+        scores_eval, fused_eval_file, force, do_training=do_training)
