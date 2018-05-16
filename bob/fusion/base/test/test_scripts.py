@@ -35,22 +35,39 @@ def compare_scores(path1, path2):
             assert all(score1[name] == score2[name])
 
 
+def click_result(result):
+    return "%s, %s, %s" % (result.exit_code, result.output, result.exception)
+
+
 def test_fuse():
     runner = CliRunner()
     with runner.isolated_filesystem():
         fused_train_file = os.path.join('fusion_result', 'scores-train')
         fused_eval_file = os.path.join('fusion_result', 'scores-eval')
+
+        # Test with training
         cmd = [x for xy in zip(train_files, eval_files) for x in xy] + \
             ['-g', 'train', '-g', 'eval', '-a', 'llr']
-        for _ in range(2):
-            result = runner.invoke(fuse, cmd)
-            assert result.exit_code == 0
-            compare_scores(fused_train_file, fused_train_files[0])
-            compare_scores(fused_train_file + '-licit', fused_train_files[1])
-            compare_scores(fused_train_file + '-spoof', fused_train_files[2])
-            compare_scores(fused_eval_file, fused_eval_files[0])
-            compare_scores(fused_eval_file + '-licit', fused_eval_files[1])
-            compare_scores(fused_eval_file + '-spoof', fused_eval_files[2])
+        result = runner.invoke(fuse, cmd)
+        assert result.exit_code == 0, click_result(result)
+        compare_scores(fused_train_file, fused_train_files[0])
+        compare_scores(fused_train_file + '-licit', fused_train_files[1])
+        compare_scores(fused_train_file + '-spoof', fused_train_files[2])
+        compare_scores(fused_eval_file, fused_eval_files[0])
+        compare_scores(fused_eval_file + '-licit', fused_eval_files[1])
+        compare_scores(fused_eval_file + '-spoof', fused_eval_files[2])
+
+        # Test without training
+        cmd = eval_files + ['-g', 'eval', '-a',
+                            'llr', '-m', 'fusion_result/Model.pkl']
+        result = runner.invoke(fuse, cmd)
+        assert result.exit_code == 0, click_result(result)
+        compare_scores(fused_train_file, fused_train_files[0])
+        compare_scores(fused_train_file + '-licit', fused_train_files[1])
+        compare_scores(fused_train_file + '-spoof', fused_train_files[2])
+        compare_scores(fused_eval_file, fused_eval_files[0])
+        compare_scores(fused_eval_file + '-licit', fused_eval_files[1])
+        compare_scores(fused_eval_file + '-spoof', fused_eval_files[2])
 
 
 def test_fuse_train_only():
@@ -60,7 +77,7 @@ def test_fuse_train_only():
         cmd = train_files + \
             ['-g', 'train', '-a', 'llr']
         result = runner.invoke(fuse, cmd)
-        assert result.exit_code == 0
+        assert result.exit_code == 0, click_result(result)
         compare_scores(fused_train_file, fused_train_files[0])
         compare_scores(fused_train_file + '-licit', fused_train_files[1])
         compare_scores(fused_train_file + '-spoof', fused_train_files[2])
@@ -72,7 +89,7 @@ def test_fuse_with_dev():
         cmd = train_files + train_files + \
             ['-g', 'train', '-g', 'dev', '-a', 'llr']
         result = runner.invoke(fuse, cmd)
-        assert result.exit_code == 0
+        assert result.exit_code == 0, click_result(result)
 
 
 def test_fuse_inconsistent():
@@ -105,7 +122,7 @@ def test_fuse_inconsistent():
         cmd = train_files[0:1] + [wrong_train2] + \
             ['-g', 'train', '-a', 'llr', '--skip-check']
         result = runner.invoke(fuse, cmd)
-        assert result.exit_code == 0, result.exit_code
+        assert result.exit_code == 0, click_result(result)
         assert not result.exception, result.exception
 
 
@@ -115,12 +132,12 @@ def test_boundary():
         cmd = train_files + \
             ['-g', 'train', '-a', 'llr']
         result = runner.invoke(fuse, cmd)
-        assert result.exit_code == 0
+        assert result.exit_code == 0, click_result(result)
 
         model_file = 'fusion_result/Model.pkl'
         cmd = eval_files + ['-m', model_file, '-t', '0']
         result = runner.invoke(boundary, cmd)
-        assert result.exit_code == 0
+        assert result.exit_code == 0, click_result(result)
 
 
 def test_boundary_grouping():
@@ -129,15 +146,15 @@ def test_boundary_grouping():
         cmd = train_files + \
             ['-g', 'train', '-a', 'llr']
         result = runner.invoke(fuse, cmd)
-        assert result.exit_code == 0
+        assert result.exit_code == 0, click_result(result)
 
         model_file = 'fusion_result/Model.pkl'
         cmd1 = eval_files + ['-m', model_file, '-t', '0']
 
         cmd = cmd1 + ['-G', 'random', '-g', '50']
         result = runner.invoke(boundary, cmd)
-        assert result.exit_code == 0
+        assert result.exit_code == 0, click_result(result)
 
         cmd = cmd1 + ['-G', 'kmeans', '-g', '50']
         result = runner.invoke(boundary, cmd)
-        assert result.exit_code == 0
+        assert result.exit_code == 0, click_result(result)
