@@ -91,7 +91,13 @@ def plot_boundary_decision(algorithm, scores, score_labels, threshold,
     return contourf
 
 
-@click.command()
+EPILOG = """\b
+Examples:
+$ bob fusion boundary -vvv {sys1,sys2}/scores-eval -m /path/saved_model.pkl
+"""
+
+
+@click.command(epilog=EPILOG)
 @click.argument('scores', nargs=-1, required=True,
                 type=click.Path(exists=True))
 @click.option('-m', '--model-file', required=True,
@@ -115,16 +121,12 @@ def plot_boundary_decision(algorithm, scores, score_labels, threshold,
               'between scores.')
 @verbosity_option()
 def boundary(scores, model_file, threshold, group, grouping, output, x_label,
-             y_label, skip_check):
+             y_label, skip_check, **kwargs):
     """Plots the decision boundaries of fusion algorithms.
 
     The script takes several scores (usually eval scores) from different
     biometric and pad systems and a trained algorithm and plots the decision
     boundary.
-
-    \b
-    Examples:
-    $ bob fusion boundary -vvv {sys1,sys2}/scores-eval -m /path/saved_model.pkl
 
     You need to provide two score files from two systems. System 1 will be
     plotted on the x-axis.
