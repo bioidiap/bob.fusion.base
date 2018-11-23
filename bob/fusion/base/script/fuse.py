@@ -130,23 +130,45 @@ def routine_fusion(
                 fused_eval_file, fused_scores_eval, scores_eval_lines)
 
 
-@click.command()
+@click.command(epilog='''\b
+Examples:
+# normal score fusion using the mean algorithm:
+$ bob fusion fuse -vvv sys1/scores-{world,dev,eval} sys2/scores-{world,dev,eval} -a mean
+# same thing but more compact using bash expansion:
+$ bob fusion fuse -vvv {sys1,sys2}/scores-{world,dev,eval} -a mean
+# using an already trained algorithm:
+$ bob fusion fuse -vvv {sys1,sys2}/scores-{dev,eval} -g dev -g eval -a mean -m /path/saved_model.pkl
+# train an algorithm using development set scores:
+$ bob fusion fuse -vvv {sys1,sys2}/scores-{dev,dev,eval} -a mean
+# run fusion without eval scores:
+$ bob fusion fuse -vvv {sys1,sys2}/scores-{world,dev} -g train -g dev -a mean
+# run fusion with bio and pad systems:
+$ bob fusion fuse -vvv sys_bio/scores-{world,dev,eval} sys_pad/scores-{train,dev,eval} -a mean
+''')
 @click.argument('scores', nargs=-1, required=True,
                 type=click.Path(exists=True))
 @click.option('--algorithm', '-a', required=True, cls=ResourceOption,
-              entry_point_group='bob.fusion.algorithm')
+              entry_point_group='bob.fusion.algorithm',
+              help='The fusion algorithm '
+              '(:any:`bob.fusion.algorithm.Algorithm`).')
 @click.option('--groups', '-g', default=('train', 'dev', 'eval'),
               multiple=True, cls=ResourceOption, show_default=True,
               type=click.Choice(('train', 'dev', 'eval')),
-              help='Repeat this option for multiple values.')
+              help='The groups of the scores. This should correspond to the '
+              'scores that are provided. The order of options are important '
+              'and should be in the same order as (train, dev, eval). Repeat '
+              'this option for multiple values.')
 @click.option('--output-dir', '-o', required=True, default='fusion_result',
               show_default=True, cls=ResourceOption,
-              type=click.Path(writable=True))
-@click.option('--model-file', '-m', cls=ResourceOption)
+              type=click.Path(writable=True),
+              help='The directory to save the annotations.')
+@click.option('--model-file', '-m', cls=ResourceOption,
+              help='The path to where the algorithm will be saved/loaded.')
 @click.option('--skip-check', is_flag=True, show_default=True,
-              cls=ResourceOption)
+              cls=ResourceOption, help='If True, it will skip checking for '
+              'the consistency between scores.')
 @click.option('--force', '-f', is_flag=True, show_default=True,
-              cls=ResourceOption)
+              cls=ResourceOption, help='Whether to overwrite existing files.')
 @verbosity_option(cls=ResourceOption)
 def fuse(scores, algorithm, groups, output_dir, model_file, skip_check, force,
          **kwargs):
@@ -159,43 +181,6 @@ def fuse(scores, algorithm, groups, output_dir, model_file, skip_check, force,
     Depending on which of these scores you provide, the script will skip parts
     of the execution. Provide train (and optionally dev) score files to train
     your algorithm.
-
-    \b
-    Examples:
-    # normal score fusion using the mean algorithm:
-    $ bob fusion fuse -vvv sys1/scores-{world,dev,eval} sys2/scores-{world,dev,eval} -a mean
-    # same thing but more compact using bash expansion:
-    $ bob fusion fuse -vvv {sys1,sys2}/scores-{world,dev,eval} -a mean
-    # using an already trained algorithm:
-    $ bob fusion fuse -vvv {sys1,sys2}/scores-{dev,eval} -g dev -g eval -a mean -m /path/saved_model.pkl
-    # train an algorithm using development set scores:
-    $ bob fusion fuse -vvv {sys1,sys2}/scores-{dev,dev,eval} -a mean
-    # run fusion without eval scores:
-    $ bob fusion fuse -vvv {sys1,sys2}/scores-{world,dev} -g train -g dev -a mean
-    # run fusion with bio and pad systems:
-    $ bob fusion fuse -vvv sys_bio/scores-{world,dev,eval} sys_pad/scores-{train,dev,eval} -a mean
-
-    \b
-    Parameters
-    ----------
-    scores : [str]
-        The list of score files. The scores must correspond to the groups
-        parameter and scores of each system will come after the last one.
-    algorithm : :any:`bob.fusion.algorithm.Algorithm`
-        The fusion algorithm. It can be provided using `bob.fusion.algorithm`
-        setuptools entry-points or config files.
-    groups : [str]
-        The groups of the scores. This should correspond to the scores that are
-        provided. The order of options are important and should be in the same
-        order as (train, dev, eval).
-    output_dir : str
-        The directory to save the annotations.
-    model_file : str
-        The path to where the algorithm will be saved/loaded.
-    skip_check : bool
-        If True, it will skip checking for the consistency between scores.
-    force : bool, optional
-        Whether to overwrite existing files.
 
     \b
     Raises

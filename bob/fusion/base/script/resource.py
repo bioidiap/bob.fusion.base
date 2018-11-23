@@ -9,12 +9,16 @@ import bob.bio.base
 logger = logging.getLogger(__name__)
 
 
-@click.command()
+@click.command(epilog='''\b
+Examples:
+$ bob fusion resource
+$ bob fusion resource -v
+''')
 @click.option('--packages', '-p', multiple=True,
               help='List only the resources from these packages.')
 @verbosity_option()
 @click.pass_context
-def resource(ctx, packages):
+def resource(ctx, packages, **kwargs):
     """Lists fusion algorithm resources.
     """
     click.echo(bob.bio.base.list_resources(

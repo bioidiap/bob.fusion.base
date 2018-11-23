@@ -1,10 +1,5 @@
-from .Algorithm import Algorithm
-from .AlgorithmBob import AlgorithmBob
-from .Weighted_Sum import Weighted_Sum
-from .MLP import MLP
-from .LLR import LLR
-from .GMM import GMM
-from .Empty import Empty
+from .Tanh import Tanh
+from .ZNorm import ZNorm
 
 
 # gets sphinx autodoc done right - don't remove it
@@ -24,12 +19,7 @@ def __appropriate__(*args):
 
 
 __appropriate__(
-    Algorithm,
-    AlgorithmBob,
-    Weighted_Sum,
-    MLP,
-    LLR,
-    GMM,
-    Empty,
+    Tanh,
+    ZNorm,
 )
 __all__ = [_ for _ in dir() if not _.startswith('_')]

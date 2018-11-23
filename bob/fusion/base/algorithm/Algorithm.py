@@ -6,8 +6,9 @@ from __future__ import absolute_import
 import numpy as np
 import pickle
 
-import bob.core
-logger = bob.core.log.setup("bob.fusion.base")
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Algorithm(object):
