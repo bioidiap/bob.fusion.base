@@ -22,17 +22,21 @@ packages.
 The actual fusion can be done in different ways. For example, the simplest
 approach to score-level fusion is to sum the scores of all systems. The way to
 do the fusion in this package is by implementing an algorithm class that
-inherits from :any:`bob.fusion.base.algorithm.Algorithm`. An algorithm also
-takes a list of preprocessors
-(:any:`bob.fusion.base.algorithm.Algorithm.preprocessors`) that are applied to
-data before fusion. A simple preprocessor can normalize data to be 0 mean and 1
-std. Preprocessors can also be trainable and they will be trained in
-:any:`bob.fusion.base.algorithm.Algorithm.train_preprocessors`. After training
-the preprocessors and applying them on the data, the normalized data (data is
-score values) is used to train the fusion algorithm in
-:any:`bob.fusion.base.algorithm.Algorithm.train`. After that,
-:any:`bob.fusion.base.algorithm.Algorithm.fuse` is called on normalized scores
-to get the final decision score. You can look into the source code of the
+inherits from :any:`bob.fusion.base.algorithm.Algorithm`:
+
+* An algorithm also takes a list of preprocessors
+  (:any:`bob.fusion.base.algorithm.Algorithm.preprocessors`) that are applied
+  to data before fusion.
+* A simple preprocessor can normalize data to be 0 mean and 1 std.
+* Preprocessors can also be trainable and they will be trained in
+  :any:`bob.fusion.base.algorithm.Algorithm.train_preprocessors`.
+* After training the preprocessors and applying them on the data, the
+  normalized data (data is score values) is used to train the fusion algorithm
+  in :any:`bob.fusion.base.algorithm.Algorithm.train`.
+* After that, :any:`bob.fusion.base.algorithm.Algorithm.fuse` is called on
+  normalized scores to get the final decision score.
+
+You can look into the source code of the
 :any:`bob.fusion.base.script.routine_fusion` to see the actual steps that will
 be run to do score-level fusion in this package.
 
@@ -53,7 +57,7 @@ and a face PAD system.
 
 .. code-block:: sh
 
-    $ bob fusion fuse -a mean face_bio/scores{world,dev,eval} face_pad/scores{train,dev,eval}
+    $ bob fusion fuse -a mean face_bio/scores-{world,dev,eval} face_pad/scores-{train,dev,eval}
 
 
 Finally, you can visualize the decision boundary of your fusion algorithm using

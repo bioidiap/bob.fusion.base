@@ -1,5 +1,4 @@
 from .common import *
-from .command_line import *
 from .plotting import *
 
 # gets sphinx autodoc done right - don't remove it

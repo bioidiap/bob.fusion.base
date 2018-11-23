@@ -7,8 +7,9 @@ import numpy
 
 from .Algorithm import Algorithm
 
-import bob.core
-logger = bob.core.log.setup("bob.fusion.base")
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class AND(Algorithm):

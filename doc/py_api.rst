@@ -8,8 +8,11 @@ This section includes information for using the Python API of
 ``bob.fusion.base``.
 
 
-Fusion Algorithms
-=================
+Summary
+=======
+
+Algorithms
+----------
 
 .. autosummary::
     bob.fusion.base.algorithm.Algorithm
@@ -19,7 +22,26 @@ Fusion Algorithms
     bob.fusion.base.algorithm.LLR
     bob.fusion.base.algorithm.GMM
 
+Preprocessors
+-------------
+
+.. autosummary::
+    bob.fusion.base.preprocessor.Tanh
+    bob.fusion.base.preprocessor.ZNorm
+
+Fusion Algorithms
+=================
+
 .. automodule:: bob.fusion.base.algorithm
+    :members:
+    :undoc-members:
+    :special-members: __init__
+
+
+Fusion Preprocessors
+====================
+
+.. automodule:: bob.fusion.base.preprocessor
     :members:
     :undoc-members:
     :special-members: __init__

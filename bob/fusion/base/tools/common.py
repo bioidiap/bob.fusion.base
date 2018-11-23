@@ -1,8 +1,9 @@
 import numpy as np
 from collections import defaultdict
 
-import bob.core
-logger = bob.core.log.setup("bob.fusion.base")
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_2negatives_1positive(score_lines):

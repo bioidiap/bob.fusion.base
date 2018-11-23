@@ -107,7 +107,7 @@ def test_fuse_inconsistent():
         cmd = train_files[0:1] + [wrong_train2] + \
             ['-g', 'train', '-a', 'llr']
         result = runner.invoke(fuse, cmd)
-        assert result.exit_code == -1, result.exit_code
+        assert abs(result.exit_code) == 1, result.exit_code
         assert isinstance(result.exception, ValueError)
 
         # make inconsistency

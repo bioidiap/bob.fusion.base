@@ -10,8 +10,9 @@ import bob.io.base
 from .AlgorithmBob import AlgorithmBob
 from .mlp_train_helper import MLPTrainer
 
-import bob.core
-logger = bob.core.log.setup("bob.fusion.base")
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class MLP(AlgorithmBob):

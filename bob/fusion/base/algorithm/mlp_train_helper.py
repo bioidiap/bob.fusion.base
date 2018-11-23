@@ -13,8 +13,9 @@ import bob.learn.activation
 import numpy
 import numpy.linalg as la
 
-import bob.core
-logger = bob.core.log.setup("bob.fusion.base")
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Analyzer(object):

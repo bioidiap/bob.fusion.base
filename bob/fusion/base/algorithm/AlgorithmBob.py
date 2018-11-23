@@ -5,9 +5,11 @@ from __future__ import absolute_import
 
 import pickle
 from .Algorithm import Algorithm
+from bob.io.base import HDF5File
 
-import bob.core
-logger = bob.core.log.setup("bob.fusion.base")
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class AlgorithmBob(Algorithm):
@@ -26,7 +28,7 @@ class AlgorithmBob(Algorithm):
             # just for consistent string representation
             pickle.dump(self.str, f)
 
-        d5 = bob.io.base.HDF5File(self._get_hdf5_file(model_file), "w")
+        d5 = HDF5File(self._get_hdf5_file(model_file), "w")
         try:
             self.machine.save(d5)
         finally:
@@ -43,7 +45,7 @@ class AlgorithmBob(Algorithm):
         # just for consistent string representation
         myinstance.str.update(strings)
 
-        d5 = bob.io.base.HDF5File(self._get_hdf5_file(model_file))
+        d5 = HDF5File(self._get_hdf5_file(model_file))
         try:
             myinstance.machine.load(d5)
         finally:
