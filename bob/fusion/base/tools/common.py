@@ -28,9 +28,16 @@ def check_consistency(gen_l, zei_l, atk_l):
             continue
         score_lines0 = score_lines_list[0]
         for score_lines in score_lines_list[1:]:
-            assert(np.all(
-                score_lines['claimed_id'] == score_lines0['claimed_id']))
-            assert(np.all(score_lines['real_id'] == score_lines0['real_id']))
+            match = np.all(score_lines['claimed_id'] ==
+                           score_lines0['claimed_id'])
+            if not match:
+                raise ValueError(
+                    "claimed ids do not match between score files")
+
+            match = np.all(score_lines['real_id'] == score_lines0['real_id'])
+            if not match:
+                raise ValueError(
+                    "real ids do not match between score files")
 
 
 def get_scores(*args):
@@ -89,6 +96,9 @@ def get_gza_from_lines_list(score_lines_list):
     zei_lengths = np.array(zei_lengths)
     idx1 = 0  # used later if it does not enter the if.
     if not (np.all(zei_lengths == 0) or np.all(zei_lengths > 0)):
+        logger.info("Trying to fill-in the missing zero effort impostor scores"
+                    " for pad systems. If you see a numpy index error below, "
+                    "your biometric scores do not match your pad scores.")
         # generate the missing ones
         # find one that has zei
         idx1 = zei_lengths.nonzero()[0][0]
