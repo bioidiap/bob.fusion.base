@@ -152,24 +152,24 @@ $ bob fusion fuse -vvv sys_bio/scores-{world,dev,eval} sys_pad/scores-{train,dev
               help='The fusion algorithm '
               '(:any:`bob.fusion.algorithm.Algorithm`).')
 @click.option('--groups', '-g', default=('train', 'dev', 'eval'),
-              multiple=True, cls=ResourceOption, show_default=True,
+              multiple=True, show_default=True,
               type=click.Choice(('train', 'dev', 'eval')),
               help='The groups of the scores. This should correspond to the '
               'scores that are provided. The order of options are important '
               'and should be in the same order as (train, dev, eval). Repeat '
               'this option for multiple values.')
 @click.option('--output-dir', '-o', required=True, default='fusion_result',
-              show_default=True, cls=ResourceOption,
+              show_default=True,
               type=click.Path(writable=True),
               help='The directory to save the annotations.')
-@click.option('--model-file', '-m', cls=ResourceOption,
+@click.option('--model-file', '-m',
               help='The path to where the algorithm will be saved/loaded.')
 @click.option('--skip-check', is_flag=True, show_default=True,
-              cls=ResourceOption, help='If True, it will skip checking for '
+              help='If True, it will skip checking for '
               'the consistency between scores.')
 @click.option('--force', '-f', is_flag=True, show_default=True,
-              cls=ResourceOption, help='Whether to overwrite existing files.')
-@verbosity_option(cls=ResourceOption)
+              help='Whether to overwrite existing files.')
+@verbosity_option()
 def fuse(scores, algorithm, groups, output_dir, model_file, skip_check, force,
          **kwargs):
     """Score fusion
