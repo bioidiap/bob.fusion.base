@@ -76,7 +76,7 @@ class GMM(AlgorithmBob):
 
         if self.gaussians is None:
             self.gaussians = array.shape[1] + 1
-            logger.warn("Number of Gaussians was None. "
+            logger.warning("Number of Gaussians was None. "
                         "Using {}.".format(self.gaussians))
 
         # Computes input size

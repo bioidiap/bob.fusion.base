@@ -8,7 +8,6 @@ from bob.extension.scripts.click_helper import (
 import os
 import numpy as np
 
-from bob.io.base import create_directories_safe
 from bob.bio.base.score import load_score, dump_score
 from bob.bio.base import utils
 
@@ -45,7 +44,7 @@ kwargs: %s
 def save_fused_scores(save_path, fused_scores, score_lines):
     score_lines['score'] = fused_scores
     gen, zei, atk, _, _, _ = get_2negatives_1positive(score_lines)
-    create_directories_safe(os.path.dirname(save_path))
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
     dump_score(save_path, score_lines)
     dump_score(save_path + '-licit', np.append(gen, zei))
     dump_score(save_path + '-spoof', np.append(gen, atk))
@@ -190,7 +189,7 @@ def fuse(scores, algorithm, groups, output_dir, model_file, skip_check, force,
     click.MissingParameter
         If the algorithm is not provided.
     """
-    create_directories_safe(output_dir)
+    os.makedirs(output_dir, exist_ok=True)
     if not model_file:
         do_training = True
         model_file = os.path.join(output_dir, 'Model.pkl')
@@ -303,7 +302,7 @@ def fuse(scores, algorithm, groups, output_dir, model_file, skip_check, force,
         scores_eval_lines = scores_eval_lines[~nan_eval]
 
     if found_nan:
-        logger.warn('Some nan values were removed.')
+        logger.warning('Some nan values were removed.')
 
     routine_fusion(
         algorithm, model_file, scores_train_lines, scores_train,
