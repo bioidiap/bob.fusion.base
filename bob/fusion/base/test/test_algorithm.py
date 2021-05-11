@@ -170,30 +170,6 @@ def test_weighted_sum_2():
     assert algorithm.weights == loaded_algorithm.weights
 
 
-def test_mlp():
-    algorithm = bob.fusion.base.algorithm.MLP(
-        n_systems=2, hidden_layers=[3], seed=0, batch_size=10, epoch=1,
-        max_iter=1000, no_improvements=0, valley_condition=0.9,
-        preprocessors=[StandardScaler(**{'copy': True,
-                                         'with_mean': True,
-                                         'with_std': True})])
-    assert numpy.allclose(algorithm.machine.weights[0],
-                          array([[0.0097627, 0.01856892, 0.04303787],
-                                 [0.06885315, 0.02055267, 0.07158912]]))
-    assert numpy.allclose(algorithm.machine.weights[1],
-                          array([[0.02471274],
-                                 [0.02917882],
-                                 [-0.02312366]]))
-    assert numpy.allclose(algorithm.machine.biases[0],
-                          array([0.00897664, 0.06945035, -0.01526904]))
-    assert numpy.allclose(algorithm.machine.biases[1],
-                          array([-0.01248256]))
-    _, _, fused, loaded_algorithm = run_steps(algorithm)
-    assert algorithm.machine.is_similar_to(loaded_algorithm.machine)
-    assert numpy.allclose(fused,
-                          [-1, 1, -1, -1, -1, -1, -1, 1, 1, -1], atol=0.001)
-
-
 def test_gmm():
     algorithm = bob.fusion.base.algorithm.GMM(
        number_of_gaussians=None,

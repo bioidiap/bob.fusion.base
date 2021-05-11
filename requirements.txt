@@ -4,8 +4,6 @@ bob.extension
 bob.core
 bob.measure
 bob.learn.linear
-bob.learn.activation
-bob.learn.mlp
 bob.bio.base
 scikit-learn # Used for classifiers and pre-processors.
 matplotlib   # for plotting

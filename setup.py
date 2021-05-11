@@ -52,8 +52,6 @@ setup(
             'plr-2-tanh   = bob.fusion.base.config.algorithm.plr_2:algorithm_tanh',
             'plr-3        = bob.fusion.base.config.algorithm.plr_3:algorithm',
             'plr-3-tanh   = bob.fusion.base.config.algorithm.plr_3:algorithm_tanh',
-            'mlp          = bob.fusion.base.config.algorithm.mlp:algorithm',
-            'mlp-tanh     = bob.fusion.base.config.algorithm.mlp:algorithm_tanh',
             'gmm          = bob.fusion.base.config.algorithm.gmm:algorithm',
             'gmm-tanh     = bob.fusion.base.config.algorithm.gmm:algorithm_tanh',
         ],
