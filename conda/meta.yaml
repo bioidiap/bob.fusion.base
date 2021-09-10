@@ -25,12 +25,15 @@ requirements:
     - bob.measure
     - bob.learn.linear
     - bob.bio.base
+    - matplotlib {{ matplotlib }}
+    - numpy {{ numpy }}
+    - scikit-learn {{ scikit_learn }}
   run:
     - python
     - setuptools
-    - matplotlib
-    - numpy
-    - scikit-learn
+    - {{ pin_compatible('matplotlib') }}
+    - {{ pin_compatible('numpy') }}
+    - {{ pin_compatible('scikit-learn') }}
 
 test:
   imports:
@@ -46,11 +49,10 @@ test:
     - conda inspect linkages -p $PREFIX {{ name }}  # [not win]
     - conda inspect objects -p $PREFIX {{ name }}  # [osx]
   requires:
-    - bob-devel {{ bob_devel }}.*
-    - nose
-    - coverage
-    - sphinx
-    - sphinx_rtd_theme
+    - nose {{ nose }}
+    - coverage {{ coverage }}
+    - sphinx {{ sphinx }}
+    - sphinx_rtd_theme {{ sphinx_rtd_theme }}
 
 about:
   home: https://www.idiap.ch/software/bob/
