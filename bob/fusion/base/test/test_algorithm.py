@@ -1,12 +1,16 @@
 #!/usr/bin/env python
-import numpy as np
-from numpy import array
+import logging
+
 from tempfile import NamedTemporaryFile
+
+import numpy as np
+
+from numpy import array
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+
 import bob.fusion.base
 import bob.learn.linear
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-import logging
 
 logger = logging.getLogger("bob.fusion.base")
 

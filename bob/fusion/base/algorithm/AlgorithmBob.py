@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-from __future__ import division
-from __future__ import absolute_import
-
-import pickle
-from .Algorithm import Algorithm
-from h5py import File as HDF5File
+from __future__ import absolute_import, division
 
 import logging
+import pickle
+
+from h5py import File as HDF5File
+
+from .Algorithm import Algorithm
 
 logger = logging.getLogger(__name__)
 
@@ -16,13 +16,13 @@ class AlgorithmBob(Algorithm):
     """A class to be used in score fusion using bob machines."""
 
     def _get_hdf5_file(self, model_file):
-        return model_file[:-3] + 'hdf5'
+        return model_file[:-3] + "hdf5"
 
     def custom_save(self, model_file):
         # dump preprocessors in a pickle file because
         # we don't know how they look like
         # saves the class to create it later.
-        with open(model_file, 'wb') as f:
+        with open(model_file, "wb") as f:
             pickle.dump(type(self), f)
             pickle.dump(self.preprocessors, f)
             # just for consistent string representation

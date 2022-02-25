@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
-from __future__ import division
-from __future__ import absolute_import
+from __future__ import absolute_import, division
+
+import logging
 
 import numpy as np
 
 from bob.learn.em.mixture import GMMMachine
-from .AlgorithmBob import AlgorithmBob
 
-import logging
+from .AlgorithmBob import AlgorithmBob
 
 logger = logging.getLogger("bob.fusion.base")
 
@@ -64,11 +64,9 @@ class GMM(AlgorithmBob):
         if self.n_gaussians is None:
             self.n_gaussians = array.shape[1] + 1
             logger.warning(
-                "Number of Gaussians was None. " "Using {}.".format(self.n_gaussians)
+                "Number of Gaussians was None. "
+                "Using {}.".format(self.n_gaussians)
             )
-
-        # Computes input size
-        input_size = array.shape[1]
 
         # Creates the machines (KMeans and GMM)
         logger.debug("Training GMM machine")
@@ -84,4 +82,8 @@ class GMM(AlgorithmBob):
         self.machine.fit(array)
 
     def decision_function(self, scores):
-        return np.fromiter((self.machine.log_likelihood(s) for s in scores), np.float, scores.shape[0])
+        return np.fromiter(
+            (self.machine.log_likelihood(s) for s in scores),
+            np.float,
+            scores.shape[0],
+        )
