@@ -5,7 +5,7 @@ from __future__ import absolute_import
 
 import pickle
 from .Algorithm import Algorithm
-from bob.io.base import HDF5File
+from h5py import File as HDF5File
 
 import logging
 

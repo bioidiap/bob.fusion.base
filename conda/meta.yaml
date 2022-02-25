@@ -22,9 +22,8 @@ requirements:
     - setuptools {{ setuptools }}
     - pip {{ pip }}
     - bob.extension
-    - bob.core
     - bob.measure
-    - bob.learn.linear
+    - bob.learn.em
     - bob.bio.base
     - matplotlib {{ matplotlib }}
     - numpy {{ numpy }}

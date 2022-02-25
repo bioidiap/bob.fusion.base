@@ -1,9 +1,8 @@
 setuptools
 numpy
 bob.extension
-bob.core
 bob.measure
-bob.learn.linear
+bob.learn.em
 bob.bio.base
 scikit-learn # Used for classifiers and pre-processors.
 matplotlib   # for plotting

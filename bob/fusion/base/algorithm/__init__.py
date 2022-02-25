@@ -1,7 +1,6 @@
 from .Algorithm import Algorithm
 from .AlgorithmBob import AlgorithmBob
 from .Weighted_Sum import Weighted_Sum
-from .LLR import LLR
 from .GMM import GMM
 from .Empty import Empty
 
@@ -26,7 +25,6 @@ __appropriate__(
     Algorithm,
     AlgorithmBob,
     Weighted_Sum,
-    LLR,
     GMM,
     Empty,
 )

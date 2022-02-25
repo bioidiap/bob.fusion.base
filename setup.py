@@ -44,10 +44,8 @@ setup(
         'bob.fusion.algorithm': [
             'mean         = bob.fusion.base.config.algorithm.mean:algorithm',
             'mean-tanh    = bob.fusion.base.config.algorithm.mean:algorithm_tanh',
-            'llr          = bob.fusion.base.config.algorithm.llr:algorithm',
-            'llr-tanh     = bob.fusion.base.config.algorithm.llr:algorithm_tanh',
-            'llr-skl      = bob.fusion.base.config.algorithm.llr_skl:algorithm',
-            'llr-skl-tanh = bob.fusion.base.config.algorithm.llr_skl:algorithm_tanh',
+            'llr          = bob.fusion.base.config.algorithm.llr_skl:algorithm',
+            'llr-tanh     = bob.fusion.base.config.algorithm.llr_skl:algorithm_tanh',
             'plr-2        = bob.fusion.base.config.algorithm.plr_2:algorithm',
             'plr-2-tanh   = bob.fusion.base.config.algorithm.plr_2:algorithm_tanh',
             'plr-3        = bob.fusion.base.config.algorithm.plr_3:algorithm',
