@@ -1,8 +1,9 @@
-from sklearn.preprocessing import StandardScaler
 import numpy as np
 
+from sklearn.preprocessing import StandardScaler
+
 # to fix the sphinx docs
-StandardScaler.__module__ = 'sklearn.preprocessing'
+StandardScaler.__module__ = "sklearn.preprocessing"
 
 
 class ZNorm(StandardScaler):
@@ -16,7 +17,8 @@ class ZNorm(StandardScaler):
     def __init__(self, copy=True, **kwargs):
         """Initialize self. See help(type(self)) for accurate signature."""
         super(ZNorm, self).__init__(
-            copy=copy, with_mean=True, with_std=True, **kwargs)
+            copy=copy, with_mean=True, with_std=True, **kwargs
+        )
 
     def fit(self, X, y=None):
         """Estimates the mean and standard deviation of samples.

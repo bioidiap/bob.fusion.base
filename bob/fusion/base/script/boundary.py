@@ -1,20 +1,21 @@
 """Plots the decision boundaries of fusion algorithms.
 """
 import logging
+
 import click
-from bob.extension.scripts.click_helper import verbosity_option
 import numpy as np
 
 from bob.bio.base.score import load_score
+from bob.extension.scripts.click_helper import verbosity_option
 
-from ..tools import (
-    get_gza_from_lines_list,
-    check_consistency,
-    get_scores,
-    remove_nan,
-    grouping,
-)
 from ..algorithm import Algorithm
+from ..tools import (
+    check_consistency,
+    get_gza_from_lines_list,
+    get_scores,
+    grouping,
+    remove_nan,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +59,8 @@ def plot_boundary_decision(
     x_min, x_max = X[:, i1].min() - x_pad, X[:, i1].max() + x_pad
     y_min, y_max = X[:, i2].min() - y_pad, X[:, i2].max() + y_pad
     xx, yy = np.meshgrid(
-        np.linspace(x_min, x_max, resolution), np.linspace(y_min, y_max, resolution)
+        np.linspace(x_min, x_max, resolution),
+        np.linspace(y_min, y_max, resolution),
     )
 
     contourf = None
@@ -82,10 +84,17 @@ def plot_boundary_decision(
             continue
         try:
             plt.scatter(
-                X[:, 0], X[:, 1], marker=markers[i], alpha=alpha, c=color, label=legends[i]
+                X[:, 0],
+                X[:, 1],
+                marker=markers[i],
+                alpha=alpha,
+                c=color,
+                label=legends[i],
             )
         except Exception as e:
-            raise RuntimeError(f"matplotlib backend: {matplotlib.get_backend()}") from e
+            raise RuntimeError(
+                f"matplotlib backend: {matplotlib.get_backend()}"
+            ) from e
 
     plt.legend(
         bbox_to_anchor=(-0.05, 1.02, 1.05, 0.102),
@@ -173,7 +182,8 @@ $ bob fusion boundary -vvv {sys1,sys2}/scores-eval -m /path/to/Model.pkl
     "--skip-check",
     is_flag=True,
     show_default=True,
-    help="If True, it will skip checking for the consistency " "between scores.",
+    help="If True, it will skip checking for the consistency "
+    "between scores.",
 )
 @verbosity_option()
 def boundary(
@@ -201,13 +211,17 @@ def boundary(
     algorithm = None
     if model_file:
         algorithm = Algorithm().load(model_file)
-        assert threshold is not None, "threshold must be provided with the model"
+        assert (
+            threshold is not None
+        ), "threshold must be provided with the model"
 
     # load the scores
     score_lines_list_eval = [load_score(path) for path in scores]
 
     # genuine, zero effort impostor, and attack list
-    idx1, gen_le, zei_le, atk_le = get_gza_from_lines_list(score_lines_list_eval)
+    idx1, gen_le, zei_le, atk_le = get_gza_from_lines_list(
+        score_lines_list_eval
+    )
 
     # check if score lines are consistent
     if not skip_check:

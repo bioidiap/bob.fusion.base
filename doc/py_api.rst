@@ -18,7 +18,6 @@ Algorithms
     bob.fusion.base.algorithm.Algorithm
     bob.fusion.base.algorithm.AlgorithmBob
     bob.fusion.base.algorithm.Weighted_Sum
-    bob.fusion.base.algorithm.LLR
     bob.fusion.base.algorithm.GMM
 
 Preprocessors

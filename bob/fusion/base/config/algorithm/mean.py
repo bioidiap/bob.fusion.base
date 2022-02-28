@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
-import bob.fusion.base
 from sklearn.preprocessing import StandardScaler
 
+import bob.fusion.base
+
 algorithm = bob.fusion.base.algorithm.Weighted_Sum(
-    preprocessors=[StandardScaler()])
+    preprocessors=[StandardScaler()]
+)
 
 algorithm_tanh = bob.fusion.base.algorithm.Weighted_Sum(
-    preprocessors=[bob.fusion.base.preprocessor.Tanh()])
+    preprocessors=[bob.fusion.base.preprocessor.Tanh()]
+)

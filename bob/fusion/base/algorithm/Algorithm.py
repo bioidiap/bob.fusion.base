@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
-from __future__ import division
-from __future__ import absolute_import
-
-import numpy as np
-import pickle
+from __future__ import absolute_import, division
 
 import logging
+import pickle
+
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -22,11 +21,7 @@ class Algorithm(object):
         A dictionary that its content will printed in the __str__ method.
     """
 
-    def __init__(self,
-                 preprocessors=None,
-                 classifier=None,
-                 **kwargs
-                 ):
+    def __init__(self, preprocessors=None, classifier=None, **kwargs):
         """
         Parameters
         ----------
@@ -44,9 +39,9 @@ class Algorithm(object):
         super(Algorithm, self).__init__(**kwargs)
         self.classifier = classifier
         self.preprocessors = preprocessors
-        self.str = {'preprocessors': preprocessors}
+        self.str = {"preprocessors": preprocessors}
         if classifier is not self:
-            self.str['classifier'] = classifier
+            self.str["classifier"] = classifier
 
     def train_preprocessors(self, X, y=None):
         """Train preprocessors in order.
@@ -81,7 +76,7 @@ class Algorithm(object):
         """
         train_scores = np.vstack((train_neg, train_pos))
         neg_len = train_neg.shape[0]
-        y = np.zeros((train_scores.shape[0],), dtype='bool')
+        y = np.zeros((train_scores.shape[0],), dtype="bool")
         y[neg_len:] = True
         self.classifier.fit(train_scores, y)
 
@@ -107,9 +102,16 @@ class Algorithm(object):
             A string containing the full information of all parameters of this
                 (and the derived) class.
         """
-        return "%s(%s)" % (str(self.__class__), ", ".join(
-            ["%s=%s" % (key, value) for key, value in
-             self.str.items() if value is not None]))
+        return "%s(%s)" % (
+            str(self.__class__),
+            ", ".join(
+                [
+                    "%s=%s" % (key, value)
+                    for key, value in self.str.items()
+                    if value is not None
+                ]
+            ),
+        )
 
     def save(self, model_file):
         """Save the instance of the algorithm.
@@ -140,6 +142,6 @@ class Algorithm(object):
         with open(model_file, "rb") as f:
             algo_class = pickle.load(f)
             algo = algo_class()
-            if not hasattr(algo, 'custom_save'):
+            if not hasattr(algo, "custom_save"):
                 return pickle.load(f)
         return algo.load(model_file)
