@@ -4,7 +4,7 @@ import numpy as np
 
 from numpy.random import default_rng
 
-import bob.learn.em
+from bob.learn.em import KMeansMachine
 
 
 def grouping(scores, gformat="random", npoints=500, seed=None, **kwargs):
@@ -14,7 +14,7 @@ def grouping(scores, gformat="random", npoints=500, seed=None, **kwargs):
         return scores
 
     if gformat == "kmeans":
-        kmeans_machine = bob.learn.em.KMeansMachine(
+        kmeans_machine = KMeansMachine(
             n_clusters=npoints, convergence_threshold=0.1, max_iter=500
         )
         kmeans_machine.fit(scores)

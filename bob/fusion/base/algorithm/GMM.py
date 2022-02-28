@@ -6,7 +6,7 @@ import logging
 
 import numpy as np
 
-from bob.learn.em.mixture import GMMMachine
+from bob.learn.em import GMMMachine
 
 from .AlgorithmBob import AlgorithmBob
 
