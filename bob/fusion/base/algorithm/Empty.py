@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from __future__ import division
-from __future__ import absolute_import
+from __future__ import absolute_import, division
+
+import logging
 
 from .Algorithm import Algorithm
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -15,9 +15,7 @@ class Empty(Algorithm):
     preprocessors."""
 
     def __init__(self, **kwargs):
-        super(Empty, self).__init__(
-            classifier=self,
-            **kwargs)
+        super(Empty, self).__init__(classifier=self, **kwargs)
 
     def fit(self, X, y):
         pass

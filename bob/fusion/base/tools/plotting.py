@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
-import bob.learn.em
 import numpy as np
+
 from numpy.random import default_rng
+
+from bob.learn.em import KMeansMachine
 
 
 def grouping(scores, gformat="random", npoints=500, seed=None, **kwargs):
@@ -12,15 +14,10 @@ def grouping(scores, gformat="random", npoints=500, seed=None, **kwargs):
         return scores
 
     if gformat == "kmeans":
-        kmeans_machine = bob.learn.em.KMeansMachine(npoints, 2)
-        kmeans_trainer = bob.learn.em.KMeansTrainer()
-        bob.learn.em.train(
-            kmeans_trainer,
-            kmeans_machine,
-            scores,
-            max_iterations=500,
-            convergence_threshold=0.1,
+        kmeans_machine = KMeansMachine(
+            n_clusters=npoints, convergence_threshold=0.1, max_iter=500
         )
+        kmeans_machine.fit(scores)
         scores = kmeans_machine.means
 
     elif gformat == "random":
