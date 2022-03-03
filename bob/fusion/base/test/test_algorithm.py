@@ -10,7 +10,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
 import bob.fusion.base
-import bob.learn.linear
 
 logger = logging.getLogger("bob.fusion.base")
 
