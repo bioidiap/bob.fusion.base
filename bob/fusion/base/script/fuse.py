@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function
 
 import logging
 import os
+import sys
 
 import click
 import numpy as np
@@ -58,7 +59,7 @@ kwargs: %s
     info_file = os.path.join(output_dir, "Experiment.info")
     with open(info_file, "w") as f:
         f.write("Command line:\n")
-        f.write(str(click.get_os_args()) + "\n\n")
+        f.write(str(sys.argv[1:]) + "\n\n")
         f.write("Configuration:\n\n")
         f.write(info)
 
