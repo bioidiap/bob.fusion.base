@@ -10,7 +10,7 @@ from bob.learn.em import GMMMachine
 
 from .AlgorithmBob import AlgorithmBob
 
-logger = logging.getLogger("bob.fusion.base")
+logger = logging.getLogger(__name__)
 
 
 class GMM(AlgorithmBob):
