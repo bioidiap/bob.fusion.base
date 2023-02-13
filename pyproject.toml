@@ -48,6 +48,7 @@
         "sphinx-autodoc-typehints",
         "auto-intersphinx",
         "sphinxcontrib-programoutput",
+        "bob.pad.base",
         ]
     test = [
         "pytest",
