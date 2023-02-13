@@ -8,10 +8,9 @@ from click.testing import CliRunner
 
 from bob.bio.base.score import load_score
 from bob.extension.scripts.click_helper import assert_click_runner_result
+from bob.fusion.base.script.boundary import boundary
+from bob.fusion.base.script.fuse import fuse
 from bob.io.base.testing_utils import datafile
-
-from ..script.boundary import boundary
-from ..script.fuse import fuse
 
 train_files = [
     datafile("scores-train-1", "bob.fusion.base", "test/data"),
