@@ -8,7 +8,7 @@ from click.testing import CliRunner
 
 from bob.bio.base.score import load_score
 from bob.extension.scripts.click_helper import assert_click_runner_result
-from bob.io.base.test_utils import datafile
+from bob.io.base.testing_utils import datafile
 
 from ..script.boundary import boundary
 from ..script.fuse import fuse
