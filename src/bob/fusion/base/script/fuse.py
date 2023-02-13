@@ -33,7 +33,7 @@ def write_info(
     model_file,
     skip_check,
     force,
-    **kwargs
+    **kwargs,
 ):
     info = """
 scores: %s
@@ -95,7 +95,6 @@ def routine_fusion(
     min_file_size=1000,
     do_training=True,
 ):
-
     # load the model if model_file exists and no training data was provided
     if os.path.exists(model_file) and not do_training:
         logger.info("Loading the algorithm from %s", model_file)
@@ -240,7 +239,7 @@ def fuse(
     model_file,
     skip_check,
     force,
-    **kwargs
+    **kwargs,
 ):
     """Score fusion
 
@@ -288,7 +287,7 @@ def fuse(
         model_file,
         skip_check,
         force,
-        **kwargs
+        **kwargs,
     )
 
     """Do the actual fusion."""
