@@ -6,9 +6,9 @@ import logging
 
 import click
 
-import bob.bio.base
+from clapp.click import verbosity_option
 
-from bob.extension.scripts.click_helper import verbosity_option
+import bob.bio.base
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ $ bob fusion resource -v
     multiple=True,
     help="List only the resources from these packages.",
 )
-@verbosity_option()
+@verbosity_option(logger)
 @click.pass_context
 def resource(ctx, packages, **kwargs):
     """Lists fusion algorithm resources."""

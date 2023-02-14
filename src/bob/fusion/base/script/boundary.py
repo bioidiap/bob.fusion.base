@@ -5,8 +5,9 @@ import logging
 import click
 import numpy as np
 
+from clapp.click import verbosity_option
+
 from bob.bio.base.score import load_score
-from bob.extension.scripts.click_helper import verbosity_option
 
 from ..algorithm import Algorithm
 from ..tools import (
@@ -185,7 +186,7 @@ $ bob fusion boundary -vvv {sys1,sys2}/scores-eval -m /path/to/Model.pkl
     help="If True, it will skip checking for the consistency "
     "between scores.",
 )
-@verbosity_option()
+@verbosity_option(logger)
 def boundary(
     scores,
     model_file,

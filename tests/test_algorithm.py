@@ -11,7 +11,7 @@ from sklearn.preprocessing import StandardScaler
 
 import bob.fusion.base
 
-logger = logging.getLogger("bob.fusion.base")
+logger = logging.getLogger(__name__)
 
 
 NEG = array(

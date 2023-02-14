@@ -9,9 +9,10 @@ import sys
 import click
 import numpy as np
 
+from clapp.click import ResourceOption, verbosity_option
+
 from bob.bio.base import utils
 from bob.bio.base.score import dump_score, load_score
-from bob.extension.scripts.click_helper import ResourceOption, verbosity_option
 
 from ..tools import (
     check_consistency,
@@ -33,7 +34,7 @@ def write_info(
     model_file,
     skip_check,
     force,
-    **kwargs
+    **kwargs,
 ):
     info = """
 scores: %s
@@ -95,7 +96,6 @@ def routine_fusion(
     min_file_size=1000,
     do_training=True,
 ):
-
     # load the model if model_file exists and no training data was provided
     if os.path.exists(model_file) and not do_training:
         logger.info("Loading the algorithm from %s", model_file)
@@ -231,7 +231,7 @@ $ bob fusion fuse -vvv sys_bio/scores-{world,dev,eval} sys_pad/scores-{train,dev
     show_default=True,
     help="Whether to overwrite existing files.",
 )
-@verbosity_option()
+@verbosity_option(logger)
 def fuse(
     scores,
     algorithm,
@@ -240,7 +240,7 @@ def fuse(
     model_file,
     skip_check,
     force,
-    **kwargs
+    **kwargs,
 ):
     """Score fusion
 
@@ -288,7 +288,7 @@ def fuse(
         model_file,
         skip_check,
         force,
-        **kwargs
+        **kwargs,
     )
 
     """Do the actual fusion."""
