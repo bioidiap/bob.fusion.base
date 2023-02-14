@@ -26,7 +26,7 @@ $ bob fusion resource -v
     multiple=True,
     help="List only the resources from these packages.",
 )
-@verbosity_option()
+@verbosity_option(logger)
 @click.pass_context
 def resource(ctx, packages, **kwargs):
     """Lists fusion algorithm resources."""

@@ -186,7 +186,7 @@ $ bob fusion boundary -vvv {sys1,sys2}/scores-eval -m /path/to/Model.pkl
     help="If True, it will skip checking for the consistency "
     "between scores.",
 )
-@verbosity_option()
+@verbosity_option(logger)
 def boundary(
     scores,
     model_file,

@@ -231,7 +231,7 @@ $ bob fusion fuse -vvv sys_bio/scores-{world,dev,eval} sys_pad/scores-{train,dev
     show_default=True,
     help="Whether to overwrite existing files.",
 )
-@verbosity_option()
+@verbosity_option(logger)
 def fuse(
     scores,
     algorithm,
