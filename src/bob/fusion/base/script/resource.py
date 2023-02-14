@@ -6,9 +6,9 @@ import logging
 
 import click
 
-import bob.bio.base
+from clapp.click import verbosity_option
 
-from bob.extension.scripts.click_helper import verbosity_option
+import bob.bio.base
 
 logger = logging.getLogger(__name__)
 

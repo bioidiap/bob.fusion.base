@@ -9,9 +9,10 @@ import sys
 import click
 import numpy as np
 
+from clapp.click import ResourceOption, verbosity_option
+
 from bob.bio.base import utils
 from bob.bio.base.score import dump_score, load_score
-from bob.extension.scripts.click_helper import ResourceOption, verbosity_option
 
 from ..tools import (
     check_consistency,
