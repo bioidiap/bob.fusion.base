@@ -8,7 +8,6 @@ from bob.learn.em import KMeansMachine
 
 
 def grouping(scores, gformat="random", npoints=500, seed=None, **kwargs):
-
     scores = np.asarray(scores)
     if scores.size == 0:
         return scores

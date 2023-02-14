@@ -7,29 +7,27 @@ import numpy
 from click.testing import CliRunner
 
 from bob.bio.base.score import load_score
-from bob.extension.scripts.click_helper import assert_click_runner_result
-from bob.io.base.test_utils import datafile
-
-from ..script.boundary import boundary
-from ..script.fuse import fuse
+from bob.fusion.base.script.boundary import boundary
+from bob.fusion.base.script.fuse import fuse
+from bob.io.base.testing_utils import assert_click_runner_result, datafile
 
 train_files = [
-    datafile("scores-train-1", "bob.fusion.base", "test/data"),
-    datafile("scores-train-2", "bob.fusion.base", "test/data"),
+    datafile("scores-train-1", __name__, "data/"),
+    datafile("scores-train-2", __name__, "data/"),
 ]
 eval_files = [
-    datafile("scores-eval-1", "bob.fusion.base", "test/data"),
-    datafile("scores-eval-2", "bob.fusion.base", "test/data"),
+    datafile("scores-eval-1", __name__, "data/"),
+    datafile("scores-eval-2", __name__, "data/"),
 ]
 fused_train_files = [
-    datafile("scores-fused-train", "bob.fusion.base", "test/data"),
-    datafile("scores-fused-train-licit", "bob.fusion.base", "test/data"),
-    datafile("scores-fused-train-spoof", "bob.fusion.base", "test/data"),
+    datafile("scores-fused-train", __name__, "data/"),
+    datafile("scores-fused-train-licit", __name__, "data/"),
+    datafile("scores-fused-train-spoof", __name__, "data/"),
 ]
 fused_eval_files = [
-    datafile("scores-fused-eval", "bob.fusion.base", "test/data"),
-    datafile("scores-fused-eval-licit", "bob.fusion.base", "test/data"),
-    datafile("scores-fused-eval-spoof", "bob.fusion.base", "test/data"),
+    datafile("scores-fused-eval", __name__, "data/"),
+    datafile("scores-fused-eval-licit", __name__, "data/"),
+    datafile("scores-fused-eval-spoof", __name__, "data/"),
 ]
 
 REGENERATE_TEST_FILES = False

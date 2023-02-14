@@ -1,8 +1,0 @@
-setuptools
-numpy
-bob.extension
-bob.measure
-bob.learn.em
-bob.bio.base
-scikit-learn # Used for classifiers and pre-processors.
-matplotlib   # for plotting
