@@ -26,7 +26,7 @@
     dependencies = [
         "setuptools",
         "numpy",
-        "clapp",
+        "clapper",
         "bob.measure",
         "bob.learn.em",
         "bob.bio.base",
