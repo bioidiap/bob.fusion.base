@@ -5,7 +5,7 @@ import logging
 import click
 import numpy as np
 
-from clapp.click import verbosity_option
+from clapper.click import verbosity_option
 
 from bob.bio.base.score import load_score
 
