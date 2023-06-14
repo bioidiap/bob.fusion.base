@@ -24,14 +24,14 @@
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ]
     dependencies = [
-        "setuptools",
-        "numpy",
-        "clapper",
+        "bob",
         "bob.measure",
         "bob.learn.em",
         "bob.bio.base",
-        "scikit-learn",
+        "clapper",
         "matplotlib",
+        "numpy",
+        "scikit-learn",
     ]
 
 [project.urls]
