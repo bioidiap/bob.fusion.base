@@ -21,20 +21,22 @@ requirements:
     - python {{ python }}
     - setuptools {{ setuptools }}
     - pip {{ pip }}
-    - clapper
+    - bob
     - bob.measure
     - bob.learn.em
     - bob.bio.base
+    - clapper {{ clapper }}
     - matplotlib {{ matplotlib }}
     - numpy {{ numpy }}
     - scikit-learn {{ scikit_learn }}
   run:
     - python
     - setuptools
-    - clapper
+    - bob
     - bob.measure
     - bob.learn.em
     - bob.bio.base
+    - {{ pin_compatible('clapper') }}
     - {{ pin_compatible('matplotlib') }}
     - {{ pin_compatible('numpy') }}
     - {{ pin_compatible('scikit-learn') }}
