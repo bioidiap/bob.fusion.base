@@ -4,7 +4,7 @@
 
 [project]
     name = "bob.fusion.base"
-    version = "0.1.5"
+    version = "0.1.6b0"
     requires-python = ">=3.9"
     description = "Score fusion in biometric and pad experiments"
     dynamic = ["readme"]
@@ -24,18 +24,18 @@
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ]
     dependencies = [
-        "bob==12.0.0",
-        "bob.measure==6.1.0",
-        "bob.learn.em==3.3.0",
-        "bob.bio.base==8.0.0",
-        "clapper==1.0.1",
-        "matplotlib==3.6.2",
-        "numpy==1.23.5",
-        "scikit-learn==1.1.2",
+        "bob",
+        "bob.measure",
+        "bob.learn.em",
+        "bob.bio.base",
+        "clapper",
+        "matplotlib",
+        "numpy",
+        "scikit-learn",
     ]
 
 [project.urls]
-    documentation = "https://www.idiap.ch/software/bob/docs/bob/bob.fusion.base/v0.1.5/sphinx/"
+    documentation = "https://www.idiap.ch/software/bob/docs/bob/bob.fusion.base/master/sphinx/"
     homepage      = "https://pypi.org/project/bob.fusion.base/"
     repository    = "https://gitlab.idiap.ch/bob/bob.fusion.base"
     changelog     = "https://gitlab.idiap.ch/bob/bob.fusion.base/-/releases"
@@ -43,17 +43,17 @@
 [project.optional-dependencies]
     qa = ["pre-commit"]
     doc = [
-        "sphinx==5.3.0",
-        "sphinx-rtd-theme==1.1.1",
-        "sphinx-autodoc-typehints==1.21.8",
-        "auto-intersphinx==1.0.2",
-        "sphinxcontrib-programoutput==0.17",
-        "bob.pad.base==6.0.0",
+        "sphinx",
+        "sphinx_rtd_theme",
+        "sphinx-autodoc-typehints",
+        "auto-intersphinx",
+        "sphinxcontrib-programoutput",
+        "bob.pad.base",
         ]
     test = [
-        "pytest==7.2.1",
-        "pytest-cov==4.0.0",
-        "coverage==7.0.5",
+        "pytest",
+        "pytest-cov",
+        "coverage",
         ]
 
 [tool.setuptools]
@@ -106,7 +106,3 @@
     ]
     junit_logging = "all"
     junit_log_passing_tests = false
-
-[profile]
-    repository_url = "git@gitlab.idiap.ch:bob/dev-profile.git"
-    commit_hash = "ade723be1f11feddb7bece235de32cc98953dc07"
