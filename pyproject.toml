@@ -4,7 +4,7 @@
 
 [project]
     name = "bob.fusion.base"
-    version = "0.1.6b0"
+    version = "0.1.5b0"
     requires-python = ">=3.9"
     description = "Score fusion in biometric and pad experiments"
     dynamic = ["readme"]
@@ -28,6 +28,7 @@
         "bob.measure",
         "bob.learn.em",
         "bob.bio.base",
+        "bob.pad.base",
         "clapper",
         "matplotlib",
         "numpy",
@@ -48,7 +49,6 @@
         "sphinx-autodoc-typehints",
         "auto-intersphinx",
         "sphinxcontrib-programoutput",
-        "bob.pad.base",
         ]
     test = [
         "pytest",
